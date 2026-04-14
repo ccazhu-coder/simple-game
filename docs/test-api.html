@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>API 測試｜就業服務乙級 AI 闖關學習系統</title>
+  <link rel="stylesheet" href="assets/css/style.css" />
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/app.js"></script>
+  <style>
+    .api-test { background: #fff; border: 1px solid var(--line); border-radius: 20px; padding: 20px; margin-top: 20px; }
+    .api-test button { margin: 8px; padding: 10px 16px; }
+    .api-response { background: #f8fafc; border: 1px solid var(--line); border-radius: 12px; padding: 16px; margin-top: 12px; font-family: monospace; font-size: 12px; white-space: pre-wrap; word-break: break-all; max-height: 400px; overflow-y: auto; }
+  </style>
+</head>
+<body>
+  <nav class="nav">
+    <div class="container nav-inner">
+      <div class="brand"><div class="brand-badge">就</div><span>就服乙級 <span style="color:var(--blue)">AI 教練</span></span></div>
+      <div class="nav-actions">
+        <a class="btn btn-secondary" href="index.html">返回首頁</a>
+      </div>
+    </div>
+  </nav>
+
+  <section style="padding:60px 0">
+    <div class="container">
+      <div id="head"></div>
+      
+      <div class="api-test">
+        <h2>API 連接測試</h2>
+        <p style="color:var(--muted)">API 端點: <code style="color:var(--blue)">{{ APP_CONFIG.API_URL }}</code></p>
+        
+        <button class="btn btn-primary" onclick="testApi('getNextQuestion')">測試: 自動派題</button>
+        <button class="btn btn-primary" onclick="testApi('submitAnswer')">測試: 提交答案</button>
+        <button class="btn btn-primary" onclick="testApi('getWrongQuestions')">測試: 錯題本</button>
+        <button class="btn btn-primary" onclick="testApi('getUserProfile')">測試: 用戶資料</button>
+        
+        <div id="response" class="api-response" style="display:none"></div>
+      </div>
+
+      <div class="api-test">
+        <h2>功能確認清單</h2>
+        <ul style="list-style:none">
+          <li style="padding:10px 0">✓ 題目 0 延遲派發 - <span id="check1" style="color:var(--muted)">測試中...</span></li>
+          <li style="padding:10px 0">✓ 自動派題規則 - <span id="check2" style="color:var(--muted)">測試中...</span></li>
+          <li style="padding:10px 0">✓ AI 詳解返回 - <span id="check3" style="color:var(--muted)">測試中...</span></li>
+          <li style="padding:10px 0">✓ 用戶進度追蹤 - <span id="check4" style="color:var(--muted)">測試中...</span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    document.getElementById('head').innerHTML = AppHelpers.renderHeader('API 測試控制台', '驗證後端串接是否正常');
+
+    async function testApi(action) {
+      const responseDiv = document.getElementById('response');
+      responseDiv.style.display = 'block';
+      responseDiv.textContent = '測試中...\n';
+
+      try {
+        const result = await Api.post(action);
+        responseDiv.textContent = JSON.stringify(result, null, 2);
+      } catch (e) {
+        responseDiv.textContent = `錯誤: ${e.message}`;
+      }
+    }
+  </script>
+</body>
+</html>

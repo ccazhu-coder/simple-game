@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>快速練習｜就業服務乙級 AI 闖關學習系統</title>
+  <link rel="stylesheet" href="assets/css/style.css" />
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/app.js"></script>
+</head>
+<body>
+  <nav class="nav">
+    <div class="container nav-inner">
+      <div class="brand"><div class="brand-badge">就</div><span>就服乙級 <span style="color:var(--blue)">AI 教練</span></span></div>
+      <div class="nav-actions">
+        <a class="btn btn-secondary" href="index.html">返回首頁</a>
+      </div>
+    </div>
+  </nav>
+
+  <div id="head"></div>
+  <section>
+    <div class="container quiz-wrap">
+      <div class="quiz-card">
+        <div id="loadingState" style="text-align:center;padding:60px 0">
+          <div class="loader" style="margin:0 auto;margin-bottom:20px"></div>
+          <div>正在加載題目...</div>
+        </div>
+        <div id="quizContent" style="display:none">
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+            <strong id="progress" style="font-size:18px">答題進度</strong>
+            <span class="notice">後端串接版本</span>
+          </div>
+          <div class="progress"><div id="progressBar" class="progress-bar" style="width:0%"></div></div>
+          <div class="meta-row">
+            <span id="questionType" class="badge badge-blue">類型</span>
+            <span id="questionTag" class="badge badge-purple">標籤</span>
+          </div>
+          <h1 id="questionTitle" class="q-title">題目載入中...</h1>
+          <div id="optionsContainer"></div>
+          <div class="quiz-actions">
+            <button class="btn btn-primary" type="button" id="submitBtn">確認送出</button>
+            <button class="btn btn-secondary" type="button" id="nextBtn" style="display:none">下一題</button>
+            <a class="btn btn-dark" href="index.html">返回首頁</a>
+          </div>
+          <div class="analysis" id="analysisSection" style="display:none">
+            <h3>AI 教練解析</h3>
+            <div class="analysis-block">
+              <div class="analysis-label">核心解析</div>
+              <div id="analysisCoreText" class="analysis-text">載入中...</div>
+            </div>
+            <div class="analysis-block">
+              <div class="analysis-label">記憶口訣</div>
+              <div id="analysisMemoText" class="analysis-text">載入中...</div>
+            </div>
+            <div class="analysis-block">
+              <div class="analysis-label">陷阱提示</div>
+              <div id="analysisTrapText" class="analysis-text">載入中...</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="side-card">
+        <div style="font-size:20px;font-weight:900;margin-bottom:12px">本次模式</div>
+        <div class="notice">快速練習</div>
+        <div class="list-card">
+          <div style="font-weight:900">功能說明</div>
+          <div style="margin-top:10px;color:var(--muted);font-weight:600">從後端 API 自動派題，0 延遲開始答題。</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    let currentQuestion = null;
+    let selectedAnswer = null;
+    let answered = false;
+
+    document.getElementById('head').innerHTML = AppHelpers.renderHeader('快速練習', '後端 API 串接版本 - 自動派題、0 延遲');
+
+    async function loadQuestion() {
+      try {
+        const result = await Api.post('getNextQuestion', { mode: 'quick' });
+        if (result.success && result.question) {
+          currentQuestion = result.question;
+          selectedAnswer = null;
+          answered = false;
+          renderQuestion();
+        }
+      } catch (e) {
+        console.error('Error loading question:', e);
+      }
+    }
+
+    function renderQuestion() {
+      document.getElementById('loadingState').style.display = 'none';
+      document.getElementById('quizContent').style.display = 'block';
+      
+      const progress = `${currentQuestion.questionNumber} / ${currentQuestion.totalQuestions}`;
+      const percent = (currentQuestion.questionNumber / currentQuestion.totalQuestions) * 100;
+      
+      document.getElementById('progress').textContent = `答題進度 ${progress}`;
+      document.getElementById('progressBar').style.width = percent + '%';
+      document.getElementById('questionType').textContent = currentQuestion.type === 'single' ? '✓ 單選題' : '✓ 複選題';
+      document.getElementById('questionTag').textContent = `#${currentQuestion.category}`;
+      document.getElementById('questionTitle').textContent = currentQuestion.title;
+
+      const optionsHtml = currentQuestion.options.map(opt => `
+        <div class="option" data-key="${opt.key}" onclick="selectOption('${opt.key}')">
+          <div class="option-key">${opt.key}</div>
+          <div><strong>${opt.text}</strong></div>
+        </div>
+      `).join('');
+      
+      document.getElementById('optionsContainer').innerHTML = optionsHtml;
+      document.getElementById('analysisSection').style.display = 'none';
+      document.getElementById('submitBtn').style.display = 'inline-flex';
+      document.getElementById('nextBtn').style.display = 'none';
+    }
+
+    function selectOption(key) {
+      if (answered) return;
+      selectedAnswer = key;
+      document.querySelectorAll('.option').forEach(opt => {
+        opt.classList.toggle('selected', opt.dataset.key === key);
+      });
+    }
+
+    document.getElementById('submitBtn').addEventListener('click', async () => {
+      if (!selectedAnswer) {
+        alert('請選擇一個答案');
+        return;
+      }
+      
+      answered = true;
+      document.getElementById('submitBtn').style.display = 'none';
+      document.getElementById('nextBtn').style.display = 'inline-flex';
+      
+      const result = await Api.post('submitAnswer', {
+        questionId: currentQuestion.id,
+        answer: selectedAnswer
+      });
+      
+      if (result.success) {
+        document.getElementById('analysisCoreText').textContent = result.analysis.core;
+        document.getElementById('analysisMemoText').textContent = result.analysis.memo;
+        document.getElementById('analysisTrapText').textContent = result.analysis.trap;
+        document.getElementById('analysisSection').style.display = 'block';
+      }
+    });
+
+    document.getElementById('nextBtn').addEventListener('click', loadQuestion);
+
+    loadQuestion();
+  </script>
+</body>
+</html>
