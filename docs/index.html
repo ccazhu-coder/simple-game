@@ -1,559 +1,632 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
+<html lang="zh-Hant">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="簡單遊戲 - Simple Game - 一個用 Python 和 Pygame 製作的趣味射擊避障遊戲。免費開源，支持 Windows、macOS 和 Linux。">
-    <meta name="keywords" content="遊戲, Python, Pygame, 開源遊戲, 射擊遊戲, 免費遊戲">
-    <meta name="author" content="ccazhu-coder">
-    <title>簡單遊戲 - Simple Game | 免費開源遊戲</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        :root {
-            --primary: #667eea;
-            --primary-dark: #764ba2;
-            --secondary: #f093fb;
-            --success: #4CAF50;
-            --danger: #f44336;
-            --warning: #ff9800;
-            --dark: #2c3e50;
-            --light: #ecf0f1;
-            --text-dark: #2c3e50;
-            --text-light: #666;
-        }
-
-        html {
-            scroll-behavior: smooth;
-        }
-
-        body {
-            font-family: 'Segoe UI', 'Microsoft YaHei', Tahoma, Geneva, Verdana, sans-serif;
-            line-height: 1.6;
-            color: var(--text-light);
-            background: #f8f9fa;
-        }
-
-        /* 導航欄 */
-        nav {
-            background: white;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        .nav-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 1rem 2rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .nav-logo {
-            font-size: 24px;
-            font-weight: bold;
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 2rem;
-            list-style: none;
-        }
-
-        .nav-links a {
-            text-decoration: none;
-            color: var(--text-dark);
-            font-weight: 500;
-            transition: color 0.3s;
-        }
-
-        .nav-links a:hover {
-            color: var(--primary);
-        }
-
-        /* 英雄區 */
-        .hero {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-            color: white;
-            padding: 100px 2rem;
-            text-align: center;
-        }
-
-        .hero-content {
-            max-width: 800px;
-            margin: 0 auto;
-        }
-
-        .hero h1 {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
-        }
-
-        .hero p {
-            font-size: 1.2rem;
-            margin-bottom: 2rem;
-            opacity: 0.95;
-        }
-
-        .cta-buttons {
-            display: flex;
-            gap: 1rem;
-            justify-content: center;
-            flex-wrap: wrap;
-            margin-top: 2rem;
-        }
-
-        .btn {
-            padding: 12px 30px;
-            font-size: 1rem;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            text-decoration: none;
-            transition: all 0.3s ease;
-            font-weight: 600;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .btn-primary {
-            background: white;
-            color: var(--primary-dark);
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-        }
-
-        .btn-secondary {
-            background: transparent;
-            color: white;
-            border: 2px solid white;
-        }
-
-        .btn-secondary:hover {
-            background: rgba(255,255,255,0.1);
-        }
-
-        /* 容器 */
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 2rem;
-        }
-
-        /* 區塊 */
-        .section {
-            padding: 80px 0;
-        }
-
-        .section-title {
-            font-size: 2.5rem;
-            margin-bottom: 3rem;
-            text-align: center;
-            color: var(--text-dark);
-        }
-
-        .section-subtitle {
-            font-size: 1.1rem;
-            text-align: center;
-            color: var(--text-light);
-            margin-top: -1.5rem;
-            margin-bottom: 2rem;
-        }
-
-        /* 特性網格 */
-        .features-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 2rem;
-            margin-top: 3rem;
-        }
-
-        .feature-card {
-            background: white;
-            padding: 2rem;
-            border-radius: 12px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
-            transition: transform 0.3s, box-shadow 0.3s;
-            text-align: center;
-        }
-
-        .feature-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 30px rgba(0,0,0,0.15);
-        }
-
-        .feature-icon {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-        }
-
-        .feature-card h3 {
-            color: var(--text-dark);
-            margin-bottom: 1rem;
-            font-size: 1.3rem;
-        }
-
-        /* 下載區 */
-        .download-section {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            color: white;
-        }
-
-        .platform-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 2rem;
-            margin-top: 3rem;
-        }
-
-        .platform-card {
-            background: rgba(255,255,255,0.1);
-            padding: 2rem;
-            border-radius: 12px;
-            border: 2px solid rgba(255,255,255,0.2);
-            backdrop-filter: blur(10px);
-            text-align: center;
-        }
-
-        .platform-card h3 {
-            font-size: 1.5rem;
-            margin: 1rem 0;
-        }
-
-        .platform-icon {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-        }
-
-        /* 統計數據 */
-        .stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 2rem;
-            margin-top: 3rem;
-        }
-
-        .stat-card {
-            text-align: center;
-            padding: 2rem;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
-        }
-
-        .stat-number {
-            font-size: 2.5rem;
-            font-weight: bold;
-            color: var(--primary);
-        }
-
-        .stat-label {
-            color: var(--text-light);
-            margin-top: 0.5rem;
-        }
-
-        /* 頁尾 */
-        footer {
-            background: var(--text-dark);
-            color: white;
-            padding: 3rem 0;
-            text-align: center;
-        }
-
-        .footer-content {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 2rem;
-            margin-bottom: 2rem;
-        }
-
-        .footer-section h4 {
-            margin-bottom: 1rem;
-            color: var(--primary);
-        }
-
-        .footer-section ul {
-            list-style: none;
-        }
-
-        .footer-section a {
-            color: #bbb;
-            text-decoration: none;
-            transition: color 0.3s;
-        }
-
-        .footer-section a:hover {
-            color: white;
-        }
-
-        .footer-bottom {
-            border-top: 1px solid rgba(255,255,255,0.1);
-            padding-top: 2rem;
-        }
-
-        /* 響應式設計 */
-        @media (max-width: 768px) {
-            .hero h1 {
-                font-size: 2rem;
-            }
-
-            .nav-links {
-                gap: 1rem;
-                font-size: 0.9rem;
-            }
-
-            .section-title {
-                font-size: 1.8rem;
-            }
-
-            .cta-buttons {
-                flex-direction: column;
-            }
-
-            .btn {
-                width: 100%;
-                justify-content: center;
-            }
-        }
-    </style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>就業服務乙級 AI 闖關學習系統｜AI教練陪跑・高效通關</title>
+  <meta name="description" content="就業服務乙級 AI 闖關學習系統，結合 AI 教練解析、複選題特訓、錯題複習與模擬考，幫助更快看懂考點、記住重點、避開陷阱。" />
+  <style>
+    :root{
+      --blue:#2563eb;
+      --blue-dark:#1e3a8a;
+      --bg:#f8fafc;
+      --text:#0f172a;
+      --muted:#475569;
+      --line:#e2e8f0;
+      --card:#ffffff;
+      --vip:#f59e0b;
+      --green:#16a34a;
+      --red:#dc2626;
+      --shadow:0 20px 40px rgba(15,23,42,.08);
+      --radius:24px;
+      --radius-lg:32px;
+      --max:1180px;
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      font-family:"Noto Sans TC","Microsoft JhengHei",system-ui,sans-serif;
+      background:var(--bg);
+      color:var(--text);
+      line-height:1.6;
+    }
+    a{text-decoration:none;color:inherit}
+    img{max-width:100%;display:block}
+    .container{width:min(var(--max),calc(100% - 32px));margin:auto}
+    .nav{
+      position:sticky;top:0;z-index:20;
+      background:rgba(255,255,255,.86);
+      backdrop-filter:blur(12px);
+      border-bottom:1px solid rgba(226,232,240,.7);
+    }
+    .nav-inner{
+      display:flex;align-items:center;justify-content:space-between;
+      gap:16px;padding:14px 0;
+    }
+    .brand{
+      display:flex;align-items:center;gap:12px;font-weight:900;font-size:22px;
+      letter-spacing:-.02em;
+    }
+    .brand-badge{
+      width:42px;height:42px;border-radius:14px;background:var(--blue);
+      color:#fff;display:grid;place-items:center;font-size:22px;font-weight:900;
+      box-shadow:0 12px 24px rgba(37,99,235,.25);
+    }
+    .nav-links{display:flex;gap:28px;font-weight:800;color:var(--muted);font-size:14px}
+    .nav-actions{display:flex;gap:10px;align-items:center}
+    .btn{
+      display:inline-flex;align-items:center;justify-content:center;gap:8px;
+      border:none;cursor:pointer;font-weight:900;border-radius:16px;
+      transition:.2s ease;white-space:nowrap;
+    }
+    .btn:hover{transform:translateY(-1px)}
+    .btn-primary{
+      background:var(--blue);color:#fff;padding:14px 22px;
+      box-shadow:0 14px 28px rgba(37,99,235,.22);
+    }
+    .btn-primary:hover{background:#1d4ed8}
+    .btn-secondary{
+      background:#fff;color:var(--text);padding:14px 22px;border:1px solid var(--line);
+    }
+    .btn-dark{
+      background:var(--text);color:#fff;padding:14px 22px;
+    }
+    .hero{
+      background:
+        radial-gradient(circle at 85% 15%, rgba(147,197,253,.55) 0, rgba(239,246,255,.35) 26%, transparent 52%),
+        radial-gradient(circle at 15% 20%, rgba(219,234,254,.65) 0, transparent 35%),
+        linear-gradient(180deg,#f8fbff 0%, #f8fafc 100%);
+      padding:72px 0 60px;
+      overflow:hidden;
+    }
+    .hero-grid{
+      display:grid;grid-template-columns:1.1fr .9fr;gap:52px;align-items:center;
+    }
+    .eyebrow{
+      display:inline-flex;align-items:center;gap:8px;
+      background:#eff6ff;color:var(--blue);
+      border:1px solid #dbeafe;border-radius:999px;
+      padding:8px 14px;font-size:12px;font-weight:900;letter-spacing:.18em;
+      text-transform:uppercase;
+    }
+    h1{
+      font-size:clamp(38px,5vw,64px);
+      line-height:1.08;margin:18px 0 18px;font-weight:900;letter-spacing:-.04em;
+    }
+    .gradient{
+      background:linear-gradient(135deg,var(--blue) 0%, var(--blue-dark) 100%);
+      -webkit-background-clip:text;background-clip:text;color:transparent;
+    }
+    .hero p{
+      color:var(--muted);font-size:19px;font-weight:600;max-width:640px;margin:0 0 28px;
+    }
+    .hero-actions{display:flex;flex-wrap:wrap;gap:14px}
+    .hero-tags{display:flex;flex-wrap:wrap;gap:10px;margin-top:26px}
+    .tag{
+      background:#fff;border:1px solid #eef2f7;color:#64748b;
+      padding:10px 14px;border-radius:999px;font-size:12px;font-weight:900;
+    }
+    .mockup{
+      background:#fff;border:1px solid #eef2f7;border-radius:32px;
+      box-shadow:0 40px 80px rgba(15,23,42,.12);padding:22px;position:relative;
+    }
+    .mockup-head{
+      display:flex;justify-content:space-between;align-items:center;
+      border-bottom:1px solid #f1f5f9;padding-bottom:14px;margin-bottom:18px;
+    }
+    .dots{display:flex;gap:8px}
+    .dot{width:10px;height:10px;border-radius:999px}
+    .stats{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+    .stat{
+      border-radius:20px;padding:16px;background:#eff6ff;
+    }
+    .stat.purple{background:#f5f3ff}
+    .stat-label{
+      color:#60a5fa;font-size:11px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;
+    }
+    .stat.purple .stat-label{color:#a78bfa}
+    .stat-value{font-size:30px;font-weight:900;margin-top:6px}
+    .panel{
+      margin-top:14px;border:1px solid #eef2f7;background:#f8fafc;
+      border-radius:20px;padding:16px;
+    }
+    .panel-dark{
+      background:#0f172a;border-color:#0f172a;color:#fff;
+    }
+    .section{padding:88px 0}
+    .section-title{
+      text-align:center;margin-bottom:44px;
+    }
+    .section-title h2{
+      margin:0 0 10px;font-size:clamp(30px,4vw,46px);font-weight:900;letter-spacing:-.03em;
+    }
+    .section-title p{
+      margin:0;color:var(--muted);font-weight:600;
+    }
+    .grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:22px}
+    .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+    .card{
+      background:var(--card);border:1px solid #eef2f7;border-radius:28px;
+      padding:28px;box-shadow:0 8px 22px rgba(15,23,42,.04);
+      transition:.25s ease;
+    }
+    .card:hover{transform:translateY(-5px);box-shadow:var(--shadow)}
+    .icon{
+      width:54px;height:54px;border-radius:18px;display:grid;place-items:center;
+      font-size:24px;font-weight:900;margin-bottom:18px;
+    }
+    .blue{background:#eff6ff;color:var(--blue)}
+    .purple{background:#f5f3ff;color:#7c3aed}
+    .green{background:#ecfdf5;color:#059669}
+    .amber{background:#fffbeb;color:#d97706}
+    .card h3{margin:0 0 10px;font-size:22px;font-weight:900}
+    .card p{margin:0;color:var(--muted);font-size:15px;font-weight:600}
+    .dark-section{
+      background:#0f172a;color:#fff;position:relative;overflow:hidden;
+    }
+    .dark-section .section-title p{color:#94a3b8}
+    .mode-card{
+      background:rgba(255,255,255,.04);
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:28px;padding:24px;
+      backdrop-filter:blur(8px);
+    }
+    .mode-card h3{margin:0;font-size:21px;font-weight:900}
+    .mode-card p{margin:10px 0 0;color:#94a3b8;font-size:14px;font-weight:600}
+    .badge-vip{
+      display:inline-block;margin-top:12px;padding:6px 10px;border-radius:999px;
+      background:rgba(245,158,11,.15);color:#fbbf24;
+      font-size:10px;font-weight:900;letter-spacing:.16em;text-transform:uppercase;
+    }
+    .value-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
+    .value-box{
+      background:#fff;border:1px solid #eef2f7;border-radius:26px;padding:26px;text-align:center;
+    }
+    .value-box .big{font-size:30px;font-weight:900;color:var(--blue);letter-spacing:-.03em}
+    .value-box .small{margin-top:8px;color:var(--muted);font-size:14px;font-weight:800}
+    .pricing{
+      background:#f8fafc;
+      border-top:1px solid #eef2f7;
+      border-bottom:1px solid #eef2f7;
+    }
+    .price-card{
+      position:relative;background:#fff;border:1px solid #eef2f7;border-radius:32px;
+      padding:30px;box-shadow:0 8px 20px rgba(15,23,42,.04);
+    }
+    .price-card.featured{
+      background:#fffbeb;border:2px solid #fbbf24;transform:scale(1.02);box-shadow:0 28px 50px rgba(245,158,11,.16);
+    }
+    .price-ribbon{
+      position:absolute;left:50%;top:-13px;transform:translateX(-50%);
+      background:linear-gradient(135deg,#fbbf24,#f59e0b);
+      color:#172554;padding:8px 14px;border-radius:999px;
+      font-size:10px;font-weight:900;letter-spacing:.18em;text-transform:uppercase;
+      box-shadow:0 10px 24px rgba(245,158,11,.28);
+    }
+    .price-tag{
+      color:#94a3b8;font-size:12px;font-weight:900;letter-spacing:.18em;text-transform:uppercase;
+    }
+    .price-card h3{margin:10px 0 10px;font-size:28px;font-weight:900}
+    .price{
+      font-size:44px;font-weight:900;line-height:1.1;letter-spacing:-.03em;
+    }
+    .price.featured-color{color:var(--blue)}
+    .price-desc{margin:12px 0 0;color:var(--muted);font-weight:600}
+    .price-list{margin:22px 0 0;padding:0;list-style:none}
+    .price-list li{
+      padding:8px 0;border-bottom:1px dashed #e2e8f0;color:#334155;font-size:14px;font-weight:700;
+    }
+    .price-list li:last-child{border-bottom:none}
+    .compare-wrap{
+      margin-top:28px;background:#fff;border:1px solid #e2e8f0;border-radius:30px;padding:24px;overflow:auto;
+      box-shadow:0 8px 22px rgba(15,23,42,.04);
+    }
+    table{width:100%;border-collapse:collapse;min-width:760px}
+    th,td{padding:16px 12px;border-bottom:1px solid #f1f5f9}
+    th{text-align:left;color:#64748b;font-size:13px;font-weight:900}
+    td{text-align:center;font-size:14px;font-weight:800;color:#334155}
+    td:first-child{text-align:left;color:#0f172a}
+    .col-vip{color:var(--blue)}
+    .trial-box{
+      background:#1e1b4b;color:#fff;border-radius:40px;padding:48px 34px;text-align:center;
+      box-shadow:0 28px 60px rgba(49,46,129,.28);
+    }
+    .trial-box p{color:#c7d2fe;font-size:18px;font-weight:600;max-width:760px;margin:14px auto 0}
+    .support-grid{display:grid;grid-template-columns:1fr 1fr;gap:28px}
+    .support-card{
+      background:#fff;border:1px solid #eef2f7;border-radius:32px;padding:30px;box-shadow:0 8px 20px rgba(15,23,42,.04);
+    }
+    .steps{display:grid;gap:16px;margin-top:18px}
+    .step{display:flex;gap:14px;align-items:flex-start}
+    .step-num{
+      width:34px;height:34px;border-radius:999px;background:#eff6ff;color:var(--blue);
+      display:grid;place-items:center;font-weight:900;flex:0 0 34px;
+    }
+    .faq-list{max-width:860px;margin:0 auto;display:grid;gap:14px}
+    .faq-item{
+      background:#fff;border:1px solid #eef2f7;border-radius:22px;padding:22px 24px;box-shadow:0 4px 12px rgba(15,23,42,.03)
+    }
+    .faq-q{font-weight:900;font-size:18px}
+    .faq-a{margin-top:10px;color:var(--muted);font-weight:600}
+    .cta-final{text-align:center}
+    .cta-final p{max-width:760px;margin:14px auto 0;color:var(--muted);font-size:20px;font-weight:600}
+    .footer{
+      border-top:1px solid #eef2f7;background:#fff;padding:28px 0;
+    }
+    .footer-inner{
+      display:flex;justify-content:space-between;align-items:center;gap:18px;flex-wrap:wrap;
+      color:#94a3b8;font-size:12px;font-weight:900;
+    }
+    @media (max-width: 1024px){
+      .hero-grid,.support-grid,.grid-4,.grid-3,.value-grid{grid-template-columns:1fr 1fr}
+    }
+    @media (max-width: 760px){
+      .nav-links{display:none}
+      .hero{padding-top:48px}
+      .hero-grid,.support-grid,.grid-4,.grid-3,.value-grid{grid-template-columns:1fr}
+      .price-card.featured{transform:none}
+      h1{font-size:42px}
+      .section{padding:68px 0}
+      .trial-box{padding:36px 22px}
+      .footer-inner{flex-direction:column;align-items:flex-start}
+      .brand{font-size:18px}
+    }
+  </style>
 </head>
 <body>
-    <!-- 導航欄 -->
-    <nav>
-        <div class="nav-container">
-            <div class="nav-logo">🎮 Simple Game</div>
-            <ul class="nav-links">
-                <li><a href="#features">特色</a></li>
-                <li><a href="#download">下載</a></li>
-                <li><a href="#requirements">要求</a></li>
-                <li><a href="https://github.com/ccazhu-coder/simple-game" target="_blank">GitHub</a></li>
-            </ul>
-        </div>
-    </nav>
+  <nav class="nav">
+    <div class="container nav-inner">
+      <div class="brand">
+        <div class="brand-badge">就</div>
+        <span>就服乙級 <span style="color:var(--blue)">AI 教練</span></span>
+      </div>
+      <div class="nav-links">
+        <a href="#features">產品特色</a>
+        <a href="#modes">練習模式</a>
+        <a href="#pricing">VIP 方案</a>
+        <a href="#faq">FAQ</a>
+      </div>
+      <div class="nav-actions">
+        <a class="btn btn-secondary" href="#pricing">查看方案</a>
+        <a class="btn btn-primary" href="#cta">立即體驗</a>
+      </div>
+    </div>
+  </nav>
 
-    <!-- 英雄區 -->
-    <section class="hero">
-        <div class="hero-content">
-            <h1>🎮 簡單遊戲</h1>
-            <p>一款趣味的 Python Pygame 射擊避障遊戲</p>
-            <p style="opacity: 0.8; font-size: 1rem;">完全開源 • 跨平台支持 • 免費下載</p>
-            <div class="cta-buttons">
-                <a href="#download" class="btn btn-primary">⬇️ 立即下載</a>
-                <a href="https://github.com/ccazhu-coder/simple-game" class="btn btn-secondary" target="_blank">⭐ 在 GitHub 查看代碼</a>
-            </div>
+  <header class="hero">
+    <div class="container hero-grid">
+      <div>
+        <div class="eyebrow">AI 教練陪跑 × 高效通關</div>
+        <h1>就業服務乙級<br><span class="gradient">AI 闖關學習系統</span></h1>
+        <p>不只是刷題，而是用 AI 教練模式，幫助更快看懂考點、記住重點、避開陷阱。從刷題進化成真正會解題。</p>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="#cta">立即開始體驗</a>
+          <a class="btn btn-secondary" href="#pricing">查看 VIP 方案</a>
+          <a class="btn btn-dark" href="#support">聯絡客服</a>
         </div>
-    </section>
-
-    <!-- 特色區 -->
-    <section class="section" id="features">
-        <div class="container">
-            <h2 class="section-title">遊戲特色</h2>
-            <p class="section-subtitle">簡單易玩，上癮十足</p>
-            <div class="features-grid">
-                <div class="feature-card">
-                    <div class="feature-icon">⌨️</div>
-                    <h3>簡單操作</h3>
-                    <p>只需左右方向鍵，輕鬆上手，適合所有年齡</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">🎯</div>
-                    <h3>上癮玩法</h3>
-                    <p>躲避敵人，分數不斷累積，挑戰新高分</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">🚀</div>
-                    <h3>快速發射</h3>
-                    <p>無需等待下載安裝，立即開玩</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">📚</div>
-                    <h3>教育價值</h3>
-                    <p>開源代碼，適合學習遊戲開發基礎</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">🌍</div>
-                    <h3>跨平台</h3>
-                    <p>支持 Windows、macOS 和 Linux</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">💯</div>
-                    <h3>完全免費</h3>
-                    <p>MIT 開源許可，自由使用和修改</p>
-                </div>
-            </div>
+        <div class="hero-tags">
+          <span class="tag">適合考前衝刺</span>
+          <span class="tag">複選題失分救星</span>
+          <span class="tag">模擬考 × 錯題追蹤</span>
         </div>
-    </section>
+      </div>
 
-    <!-- 遊戲說明 -->
-    <section class="section" style="background: #f8f9fa;">
-        <div class="container">
-            <h2 class="section-title">遊戲規則</h2>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; margin-top: 2rem; align-items: center;">
-                <div>
-                    <h3 style="color: var(--text-dark); font-size: 1.3rem; margin-bottom: 1rem;">🎮 如何玩</h3>
-                    <ul style="list-style: none; color: var(--text-light); line-height: 2;">
-                        <li>✓ <strong>玩家</strong>：綠色方塊</li>
-                        <li>✓ <strong>敵人</strong>：紅色方塊（從天而降）</li>
-                        <li>✓ <strong>控制</strong>：左右方向鍵移動</li>
-                        <li>✓ <strong>目標</strong>：躲避敵人</li>
-                        <li>✓ <strong>計分</strong>：每躲過一個敵人 = 10 分</li>
-                    </ul>
-                </div>
-                <div style="text-align: center;">
-                    <div style="background: linear-gradient(135deg, #667eea, #764ba2); padding: 3rem; border-radius: 12px; color: white;">
-                        <div style="font-size: 2rem; margin-bottom: 1rem;">
-                            <div style="display: inline-block; width: 40px; height: 40px; background: #00ff00; border-radius: 4px; margin: 0 10px;"></div>
-                            vs
-                            <div style="display: inline-block; width: 30px; height: 30px; background: #ff0000; border-radius: 4px; margin: 0 10px;"></div>
-                        </div>
-                        <p>躲避紅色敵人<br>獲取高分！</p>
-                    </div>
-                </div>
-            </div>
+      <div class="mockup">
+        <div class="mockup-head">
+          <div style="font-size:12px;font-weight:900;color:#94a3b8;letter-spacing:.18em;text-transform:uppercase;">AI Coach Dashboard</div>
+          <div class="dots">
+            <span class="dot" style="background:#fecaca"></span>
+            <span class="dot" style="background:#fde68a"></span>
+            <span class="dot" style="background:#bbf7d0"></span>
+          </div>
         </div>
-    </section>
 
-    <!-- 下載區 -->
-    <section class="section download-section" id="download">
-        <div class="container">
-            <h2 class="section-title">立即開始</h2>
-            <p class="section-subtitle">選擇您的平台下載遊戲</p>
-            <div class="platform-grid">
-                <div class="platform-card">
-                    <div class="platform-icon">🪟</div>
-                    <h3>Windows</h3>
-                    <p>推薦版本</p>
-                    <a href="https://github.com/ccazhu-coder/simple-game/archive/refs/heads/master.zip" class="btn btn-primary" style="color: var(--primary-dark); margin-top: 1rem;">下載</a>
-                </div>
-                <div class="platform-card">
-                    <div class="platform-icon">🍎</div>
-                    <h3>macOS</h3>
-                    <p>完全支持</p>
-                    <a href="https://github.com/ccazhu-coder/simple-game/archive/refs/heads/master.zip" class="btn btn-primary" style="color: var(--primary-dark); margin-top: 1rem;">下載</a>
-                </div>
-                <div class="platform-card">
-                    <div class="platform-icon">🐧</div>
-                    <h3>Linux</h3>
-                    <p>完全支持</p>
-                    <a href="https://github.com/ccazhu-coder/simple-game/archive/refs/heads/master.zip" class="btn btn-primary" style="color: var(--primary-dark); margin-top: 1rem;">下載</a>
-                </div>
-            </div>
+        <div class="stats">
+          <div class="stat">
+            <div class="stat-label">總正確率</div>
+            <div class="stat-value" style="color:#1d4ed8">88%</div>
+          </div>
+          <div class="stat purple">
+            <div class="stat-label">已完成題數</div>
+            <div class="stat-value" style="color:#7c3aed">1,248</div>
+          </div>
         </div>
-    </section>
 
-    <!-- 系統要求 -->
-    <section class="section" id="requirements">
-        <div class="container">
-            <h2 class="section-title">系統要求</h2>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 2rem;">
-                <div style="background: #f8f9fa; padding: 2rem; border-radius: 12px;">
-                    <h3 style="color: var(--text-dark); margin-bottom: 1rem;">🖥️ 硬件要求</h3>
-                    <ul style="list-style: none; color: var(--text-light);">
-                        <li style="padding: 0.5rem 0; padding-left: 1.5rem;">✓ 100MB 可用硬碟空間</li>
-                        <li style="padding: 0.5rem 0; padding-left: 1.5rem;">✓ 512MB RAM 內存</li>
-                        <li style="padding: 0.5rem 0; padding-left: 1.5rem;">✓ 支持顯卡的計算機</li>
-                    </ul>
-                </div>
-                <div style="background: #f8f9fa; padding: 2rem; border-radius: 12px;">
-                    <h3 style="color: var(--text-dark); margin-bottom: 1rem;">⚙️ 軟件要求</h3>
-                    <ul style="list-style: none; color: var(--text-light);">
-                        <li style="padding: 0.5rem 0; padding-left: 1.5rem;">✓ Python 3.8 或更新版本</li>
-                        <li style="padding: 0.5rem 0; padding-left: 1.5rem;">✓ Pygame 2.5.2</li>
-                        <li style="padding: 0.5rem 0; padding-left: 1.5rem;">✓ Windows / macOS / Linux</li>
-                    </ul>
-                </div>
-            </div>
+        <div class="panel">
+          <div style="font-size:11px;font-weight:900;color:#94a3b8;letter-spacing:.16em;text-transform:uppercase;">AI 核心考點解析</div>
+          <div style="margin-top:8px;font-size:14px;font-weight:800;color:#334155">本題關鍵在於法規主體與申報期限判斷。</div>
         </div>
-    </section>
 
-    <!-- 統計數據 -->
-    <section class="section" style="background: #f8f9fa;">
-        <div class="container">
-            <h2 class="section-title">項目數據</h2>
-            <div class="stats">
-                <div class="stat-card">
-                    <div class="stat-number">100%</div>
-                    <div class="stat-label">開源免費</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number">3</div>
-                    <div class="stat-label">支持平台</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number">200+</div>
-                    <div class="stat-label">代碼行數</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number">5 min</div>
-                    <div class="stat-label">安裝時間</div>
-                </div>
-            </div>
+        <div class="panel panel-dark">
+          <div style="font-size:11px;font-weight:900;color:#fbbf24;letter-spacing:.16em;text-transform:uppercase;">記憶口訣</div>
+          <div style="margin-top:8px;font-size:14px;font-weight:800;color:#e2e8f0;font-style:italic">「外工聘僱，15日內申報；逾期不補，處分就到。」</div>
         </div>
-    </section>
+      </div>
+    </div>
+  </header>
 
-    <!-- 頁尾 -->
-    <footer>
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-section">
-                    <h4>🎮 遊戲</h4>
-                    <ul>
-                        <li><a href="#features">特色</a></li>
-                        <li><a href="#download">下載</a></li>
-                        <li><a href="https://github.com/ccazhu-coder/simple-game" target="_blank">GitHub</a></li>
-                    </ul>
-                </div>
-                <div class="footer-section">
-                    <h4>📚 資源</h4>
-                    <ul>
-                        <li><a href="https://github.com/ccazhu-coder/simple-game/blob/master/INSTALL.md" target="_blank">安裝指南</a></li>
-                        <li><a href="https://github.com/ccazhu-coder/simple-game/blob/master/README.md" target="_blank">相關文檔</a></li>
-                        <li><a href="https://www.pygame.org/" target="_blank">Pygame 官網</a></li>
-                    </ul>
-                </div>
-                <div class="footer-section">
-                    <h4>🔗 社交</h4>
-                    <ul>
-                        <li><a href="https://github.com/ccazhu-coder" target="_blank">GitHub 主頁</a></li>
-                        <li><a href="https://github.com/ccazhu-coder/simple-game/issues" target="_blank">提交問題</a></li>
-                        <li><a href="https://github.com/ccazhu-coder/simple-game/blob/master/LICENSE" target="_blank">許可證</a></li>
-                    </ul>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                <p>&copy; 2026 簡單遊戲 | Simple Game | 開源項目 | MIT License</p>
-                <p style="margin-top: 1rem; opacity: 0.7;">構建者：ccazhu-coder | <a href="https://github.com/ccazhu-coder/simple-game" target="_blank" style="color: var(--primary);">訪問 GitHub</a></p>
-            </div>
+  <section id="features" class="section">
+    <div class="container">
+      <div class="section-title">
+        <h2>四大核心競爭力，助你更快通關</h2>
+        <p>針對就業服務乙級考試痛點，提供更有策略的練習方式。</p>
+      </div>
+
+      <div class="grid-4">
+        <div class="card">
+          <div class="icon blue">AI</div>
+          <h3>AI 教練級解析</h3>
+          <p>作答後立即查看考點解析、記憶口訣與陷阱提示，不再只是知道對錯。</p>
         </div>
-    </footer>
+        <div class="card">
+          <div class="icon purple">複</div>
+          <h3>複選題強化模式</h3>
+          <p>針對最容易失分的複選題進行專項訓練，強化判斷邏輯與全對能力。</p>
+        </div>
+        <div class="card">
+          <div class="icon green">錯</div>
+          <h3>錯題循環複習</h3>
+          <p>自動收錄錯題，讓每一次複習都更有方向、更有策略。</p>
+        </div>
+        <div class="card">
+          <div class="icon amber">考</div>
+          <h3>模擬考與進度分析</h3>
+          <p>從平時練習到模擬考驗收，建立完整的通關節奏。</p>
+        </div>
+      </div>
+    </div>
+  </section>
 
-    <script>
-        // 平滑滾動
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({ behavior: 'smooth' });
-                }
-            });
-        });
-    </script>
+  <section id="modes" class="section dark-section">
+    <div class="container">
+      <div class="section-title" style="text-align:left;margin-bottom:38px;">
+        <h2>多元練習模式，覆蓋所有備考場景</h2>
+        <p>從基礎熱身到魔王挑戰，AI 陪你一步步升級。</p>
+      </div>
+
+      <div class="grid-3">
+        <div class="mode-card">
+          <h3>快速練習</h3>
+          <p>零碎時間也能練，快速建立題感。</p>
+        </div>
+        <div class="mode-card">
+          <h3>模擬考</h3>
+          <p>完整驗收實力，熟悉正式考試節奏。</p>
+        </div>
+        <div class="mode-card">
+          <h3>高頻考點</h3>
+          <p>聚焦最常考法規重點，提高命中率。</p>
+          <span class="badge-vip">VIP</span>
+        </div>
+        <div class="mode-card">
+          <h3>複選題特訓</h3>
+          <p>專攻最容易失分的高難度題型。</p>
+          <span class="badge-vip">VIP</span>
+        </div>
+        <div class="mode-card">
+          <h3>錯題複習</h3>
+          <p>把做錯的題目重新變成得分題。</p>
+          <span class="badge-vip">VIP</span>
+        </div>
+        <div class="mode-card">
+          <h3>極限挑戰</h3>
+          <p>給想衝高分與挑戰難題的人。</p>
+          <span class="badge-vip">VIP</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="section-title">
+        <h2>讓每一次練習，都更接近通關</h2>
+        <p>更快抓到考點、更容易記住法規重點、更能避開常見陷阱。</p>
+      </div>
+
+      <div class="value-grid">
+        <div class="value-box">
+          <div class="big">AI 教練解析</div>
+          <div class="small">即時回饋</div>
+        </div>
+        <div class="value-box">
+          <div class="big">複選題特訓</div>
+          <div class="small">高失分題型</div>
+        </div>
+        <div class="value-box">
+          <div class="big">錯題追蹤</div>
+          <div class="small">針對弱點</div>
+        </div>
+        <div class="value-box">
+          <div class="big">模擬考驗收</div>
+          <div class="small">建立節奏</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="pricing" class="section pricing">
+    <div class="container">
+      <div class="section-title">
+        <h2>升級 VIP 教練版，解鎖高效通關模式</h2>
+        <p>不只是多幾個功能，而是讓備考更有策略、更有效率。</p>
+      </div>
+
+      <div class="grid-3">
+        <div class="price-card">
+          <div class="price-tag">免費體驗</div>
+          <h3>訪客體驗版</h3>
+          <div class="price">免費</div>
+          <p class="price-desc">先體驗快速練習與基礎模擬考。</p>
+          <ul class="price-list">
+            <li>快速練習</li>
+            <li>基礎模擬考</li>
+            <li>先看操作流程</li>
+            <li>進階功能鎖定</li>
+          </ul>
+          <div style="margin-top:22px">
+            <a class="btn btn-dark" style="width:100%" href="#cta">立即體驗</a>
+          </div>
+        </div>
+
+        <div class="price-card featured">
+          <div class="price-ribbon">推薦方案</div>
+          <div class="price-tag">高效通關</div>
+          <h3>VIP 教練版</h3>
+          <div class="price featured-color">NT$ 1,290 <span style="font-size:16px;color:#64748b;font-weight:800">/ 3個月</span></div>
+          <p class="price-desc">最適合完整備考期，兼顧效率與通過率。</p>
+          <ul class="price-list">
+            <li>完整 AI 詳解</li>
+            <li>記憶口訣</li>
+            <li>陷阱提示</li>
+            <li>複選題特訓</li>
+            <li>錯題複習</li>
+            <li>學習分析</li>
+          </ul>
+          <div style="margin-top:22px">
+            <a class="btn btn-primary" style="width:100%" href="#support">查看 VIP 方案</a>
+          </div>
+        </div>
+
+        <div class="price-card">
+          <div class="price-tag">長期備考</div>
+          <h3>半年穩定版</h3>
+          <div class="price">NT$ 2,290 <span style="font-size:16px;color:#64748b;font-weight:800">/ 6個月</span></div>
+          <p class="price-desc">適合從零開始、需要長期穩定備考者。</p>
+          <ul class="price-list">
+            <li>半年 VIP 權限</li>
+            <li>完整 AI 詳解</li>
+            <li>複選題特訓</li>
+            <li>錯題追蹤</li>
+            <li>長期備考更划算</li>
+          </ul>
+          <div style="margin-top:22px">
+            <a class="btn btn-dark" style="width:100%" href="#support">聯絡客服</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="compare-wrap">
+        <div style="font-size:20px;font-weight:900;margin-bottom:14px">方案權益比較</div>
+        <table>
+          <thead>
+            <tr>
+              <th>項目</th>
+              <th>訪客</th>
+              <th>會員</th>
+              <th class="col-vip">VIP</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>快速練習</td><td>可用</td><td>可用</td><td class="col-vip">可用</td></tr>
+            <tr><td>模擬考</td><td>可用</td><td>可用</td><td class="col-vip">可用</td></tr>
+            <tr><td>作答紀錄保存</td><td>鎖定</td><td>可用</td><td class="col-vip">可用</td></tr>
+            <tr><td>高頻考點</td><td>鎖定</td><td>部分</td><td class="col-vip">可用</td></tr>
+            <tr><td>複選題特訓</td><td>鎖定</td><td>鎖定</td><td class="col-vip">可用</td></tr>
+            <tr><td>錯題複習</td><td>鎖定</td><td>鎖定</td><td class="col-vip">可用</td></tr>
+            <tr><td>AI 詳解</td><td>鎖定</td><td>鎖定</td><td class="col-vip">可用</td></tr>
+            <tr><td>記憶口訣</td><td>鎖定</td><td>鎖定</td><td class="col-vip">可用</td></tr>
+            <tr><td>陷阱提示</td><td>鎖定</td><td>鎖定</td><td class="col-vip">可用</td></tr>
+            <tr><td>學習分析</td><td>部分</td><td>基礎</td><td class="col-vip">完整</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="trial-box">
+        <h2 style="margin:0;font-size:clamp(32px,4vw,46px);font-weight:900;letter-spacing:-.03em;">先體驗，再決定是否升級</h2>
+        <p>會員可先啟用 5 天試用，提前感受 VIP 功能是否符合自己的備考需求。</p>
+        <div style="margin-top:28px">
+          <a class="btn" style="background:#facc15;color:#172554;padding:16px 30px;border-radius:20px;font-size:20px;font-weight:900;box-shadow:0 18px 30px rgba(250,204,21,.25)" href="#support">立即開啟 5 天試用</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="support" class="section">
+    <div class="container support-grid">
+      <div>
+        <h2 style="margin:0 0 14px;font-size:clamp(30px,4vw,44px);font-weight:900;letter-spacing:-.03em;">需要開通方案或想先了解？</h2>
+        <p style="margin:0;color:var(--muted);font-size:18px;font-weight:600;">目前採客服人工開通制，加入 LINE 官方帳號後，可由客服協助開通對應方案與 VIP 權限。</p>
+        <div style="display:flex;flex-wrap:wrap;gap:14px;margin-top:28px">
+          <a class="btn btn-primary" href="https://lin.ee/qZt97JY" target="_blank" rel="noopener">LINE 官方帳號</a>
+          <a class="btn btn-dark" href="mailto:pucezhang@gmail.com">Email 客服</a>
+        </div>
+      </div>
+
+      <div class="support-card">
+        <div style="font-size:22px;font-weight:900;">開通流程</div>
+        <div class="steps">
+          <div class="step">
+            <div class="step-num">1</div>
+            <div><strong>加入 LINE 官方帳號</strong><br><span style="color:var(--muted);font-weight:600">告知欲開通方案。</span></div>
+          </div>
+          <div class="step">
+            <div class="step-num">2</div>
+            <div><strong>完成付款</strong><br><span style="color:var(--muted);font-weight:600">提供註冊 Email 給客服。</span></div>
+          </div>
+          <div class="step">
+            <div class="step-num">3</div>
+            <div><strong>手動開通權限</strong><br><span style="color:var(--muted);font-weight:600">客服確認後即可開始使用。</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="faq" class="section pricing">
+    <div class="container">
+      <div class="section-title">
+        <h2>常見問題 FAQ</h2>
+        <p>先把你最在意的事情說清楚。</p>
+      </div>
+
+      <div class="faq-list">
+        <div class="faq-item">
+          <div class="faq-q">這套系統適合誰？</div>
+          <div class="faq-a">適合所有正準備就業服務乙級的人，尤其是複選題常失分、需要考前衝刺者。</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q">訪客版和 VIP 有什麼差別？</div>
+          <div class="faq-a">VIP 解鎖完整 AI 詳解、複選題特訓、錯題複習與學習分析，讓每次練習更有策略。</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q">可以先試用嗎？</div>
+          <div class="faq-a">可以，註冊會員後可啟用 5 天試用，先感受完整功能再決定是否升級。</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q">開通方式是什麼？</div>
+          <div class="faq-a">目前採 LINE 客服人工開通，不做假金流，也不需複雜操作。</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q">VIP 適合怎樣的備考者？</div>
+          <div class="faq-a">適合想更有效率備考、想強化複選題、想穩定提升答題率的人。</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="cta" class="section">
+    <div class="container cta-final">
+      <h2 style="margin:0;font-size:clamp(34px,5vw,58px);font-weight:900;letter-spacing:-.04em;line-height:1.15;">現在開始，比臨時抱佛腳更有效</h2>
+      <p>越早開始建立考點判斷力，越能穩定提升通關率。</p>
+      <div style="display:flex;flex-wrap:wrap;gap:14px;justify-content:center;margin-top:30px">
+        <a class="btn btn-primary" href="quiz.html">立即開始體驗</a>
+        <a class="btn btn-secondary" href="https://lin.ee/qZt97JY" target="_blank" rel="noopener">聯絡客服開通 VIP</a>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container footer-inner">
+      <div>就服乙級 AI 教練</div>
+      <div>© 2024 就業服務乙級 AI 闖關學習系統</div>
+      <div>Privacy Policy ・ Terms of Service</div>
+    </div>
+  </footer>
 </body>
 </html>
