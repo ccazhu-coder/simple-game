@@ -3,294 +3,557 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>簡單遊戲 - Simple Game</title>
+    <meta name="description" content="簡單遊戲 - Simple Game - 一個用 Python 和 Pygame 製作的趣味射擊避障遊戲。免費開源，支持 Windows、macOS 和 Linux。">
+    <meta name="keywords" content="遊戲, Python, Pygame, 開源遊戲, 射擊遊戲, 免費遊戲">
+    <meta name="author" content="ccazhu-coder">
+    <title>簡單遊戲 - Simple Game | 免費開源遊戲</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-        
+
+        :root {
+            --primary: #667eea;
+            --primary-dark: #764ba2;
+            --secondary: #f093fb;
+            --success: #4CAF50;
+            --danger: #f44336;
+            --warning: #ff9800;
+            --dark: #2c3e50;
+            --light: #ecf0f1;
+            --text-dark: #2c3e50;
+            --text-light: #666;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
+            font-family: 'Segoe UI', 'Microsoft YaHei', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-light);
+            background: #f8f9fa;
         }
-        
-        .container {
+
+        /* 導航欄 */
+        nav {
             background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            max-width: 800px;
-            width: 100%;
-            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
-        
-        .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-logo {
+            font-size: 24px;
+            font-weight: bold;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-dark);
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+
+        /* 英雄區 */
+        .hero {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
             color: white;
-            padding: 60px 40px;
+            padding: 100px 2rem;
             text-align: center;
         }
-        
-        .header h1 {
-            font-size: 48px;
-            margin-bottom: 10px;
+
+        .hero-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
         }
-        
-        .header p {
-            font-size: 18px;
+
+        .hero p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
             opacity: 0.95;
         }
-        
-        .content {
-            padding: 50px 40px;
-        }
-        
-        .section {
-            margin-bottom: 40px;
-        }
-        
-        .section h2 {
-            color: #667eea;
-            font-size: 24px;
-            margin-bottom: 15px;
+
+        .cta-buttons {
             display: flex;
-            align-items: center;
-        }
-        
-        .section h2::before {
-            content: '';
-            display: inline-block;
-            width: 4px;
-            height: 24px;
-            background: #667eea;
-            margin-right: 12px;
-            border-radius: 2px;
-        }
-        
-        .section p {
-            color: #333;
-            line-height: 1.8;
-            margin-bottom: 10px;
-        }
-        
-        .steps {
-            background: #f8f9ff;
-            border-left: 4px solid #667eea;
-            padding: 20px;
-            border-radius: 8px;
-            margin-top: 15px;
-        }
-        
-        .steps ol {
-            margin-left: 20px;
-            color: #333;
-        }
-        
-        .steps li {
-            margin-bottom: 10px;
-            line-height: 1.6;
-        }
-        
-        .code-block {
-            background: #2d2d2d;
-            color: #f8f8f2;
-            padding: 15px;
-            border-radius: 8px;
-            font-family: 'Courier New', monospace;
-            font-size: 14px;
-            overflow-x: auto;
-            margin: 15px 0;
-        }
-        
-        .buttons {
-            display: flex;
-            gap: 15px;
-            margin-top: 30px;
-            flex-wrap: wrap;
-        }
-        
-        .btn {
-            display: inline-flex;
-            align-items: center;
+            gap: 1rem;
             justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 2rem;
+        }
+
+        .btn {
             padding: 12px 30px;
-            font-size: 16px;
+            font-size: 1rem;
             border: none;
             border-radius: 8px;
             cursor: pointer;
             text-decoration: none;
             transition: all 0.3s ease;
             font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
         }
-        
+
         .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            background: white;
+            color: var(--primary-dark);
         }
-        
+
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
         }
-        
+
         .btn-secondary {
-            background: #f0f0f0;
-            color: #333;
-            border: 2px solid #667eea;
+            background: transparent;
+            color: white;
+            border: 2px solid white;
         }
-        
+
         .btn-secondary:hover {
-            background: #667eea;
+            background: rgba(255,255,255,0.1);
+        }
+
+        /* 容器 */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        /* 區塊 */
+        .section {
+            padding: 80px 0;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+            text-align: center;
+            color: var(--text-dark);
+        }
+
+        .section-subtitle {
+            font-size: 1.1rem;
+            text-align: center;
+            color: var(--text-light);
+            margin-top: -1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        /* 特性網格 */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .feature-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            transition: transform 0.3s, box-shadow 0.3s;
+            text-align: center;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .feature-card h3 {
+            color: var(--text-dark);
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+        }
+
+        /* 下載區 */
+        .download-section {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
             color: white;
         }
-        
-        .feature-grid {
+
+        .platform-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-top: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
         }
-        
-        .feature-card {
-            background: #f8f9ff;
-            padding: 20px;
-            border-radius: 8px;
-            border: 2px solid #e0e7ff;
+
+        .platform-card {
+            background: rgba(255,255,255,0.1);
+            padding: 2rem;
+            border-radius: 12px;
+            border: 2px solid rgba(255,255,255,0.2);
+            backdrop-filter: blur(10px);
             text-align: center;
         }
-        
-        .feature-card h3 {
-            color: #667eea;
-            margin-bottom: 8px;
+
+        .platform-card h3 {
+            font-size: 1.5rem;
+            margin: 1rem 0;
         }
-        
-        .feature-card p {
-            color: #666;
-            font-size: 14px;
+
+        .platform-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
         }
-        
-        .emoji {
-            font-size: 32px;
-            margin-bottom: 10px;
+
+        /* 統計數據 */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
         }
-        
+
+        .stat-card {
+            text-align: center;
+            padding: 2rem;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        .stat-label {
+            color: var(--text-light);
+            margin-top: 0.5rem;
+        }
+
+        /* 頁尾 */
         footer {
-            background: #f8f9ff;
-            padding: 20px;
+            background: var(--text-dark);
+            color: white;
+            padding: 3rem 0;
             text-align: center;
-            color: #666;
-            border-top: 1px solid #e0e7ff;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-section h4 {
+            margin-bottom: 1rem;
+            color: var(--primary);
+        }
+
+        .footer-section ul {
+            list-style: none;
+        }
+
+        .footer-section a {
+            color: #bbb;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer-section a:hover {
+            color: white;
+        }
+
+        .footer-bottom {
+            border-top: 1px solid rgba(255,255,255,0.1);
+            padding-top: 2rem;
+        }
+
+        /* 響應式設計 */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .nav-links {
+                gap: 1rem;
+                font-size: 0.9rem;
+            }
+
+            .section-title {
+                font-size: 1.8rem;
+            }
+
+            .cta-buttons {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>🎮 簡單遊戲</h1>
-            <p>Simple Game - Python Pygame 射擊避障遊戲</p>
+    <!-- 導航欄 -->
+    <nav>
+        <div class="nav-container">
+            <div class="nav-logo">🎮 Simple Game</div>
+            <ul class="nav-links">
+                <li><a href="#features">特色</a></li>
+                <li><a href="#download">下載</a></li>
+                <li><a href="#requirements">要求</a></li>
+                <li><a href="https://github.com/ccazhu-coder/simple-game" target="_blank">GitHub</a></li>
+            </ul>
         </div>
-        
-        <div class="content">
-            <div class="section">
-                <h2>遊戲特色</h2>
-                <div class="feature-grid">
-                    <div class="feature-card">
-                        <div class="emoji">⌨️</div>
-                        <h3>簡單操作</h3>
-                        <p>只需使用方向鍵即可控制</p>
-                    </div>
-                    <div class="feature-card">
-                        <div class="emoji">🎯</div>
-                        <h3>上癮玩法</h3>
-                        <p>躲避敵人，得分逐漸增加</p>
-                    </div>
-                    <div class="feature-card">
-                        <div class="emoji">🚀</div>
-                        <h3>快速開始</h3>
-                        <p>無需登錄，立即開玩</p>
+    </nav>
+
+    <!-- 英雄區 -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1>🎮 簡單遊戲</h1>
+            <p>一款趣味的 Python Pygame 射擊避障遊戲</p>
+            <p style="opacity: 0.8; font-size: 1rem;">完全開源 • 跨平台支持 • 免費下載</p>
+            <div class="cta-buttons">
+                <a href="#download" class="btn btn-primary">⬇️ 立即下載</a>
+                <a href="https://github.com/ccazhu-coder/simple-game" class="btn btn-secondary" target="_blank">⭐ 在 GitHub 查看代碼</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- 特色區 -->
+    <section class="section" id="features">
+        <div class="container">
+            <h2 class="section-title">遊戲特色</h2>
+            <p class="section-subtitle">簡單易玩，上癮十足</p>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">⌨️</div>
+                    <h3>簡單操作</h3>
+                    <p>只需左右方向鍵，輕鬆上手，適合所有年齡</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🎯</div>
+                    <h3>上癮玩法</h3>
+                    <p>躲避敵人，分數不斷累積，挑戰新高分</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🚀</div>
+                    <h3>快速發射</h3>
+                    <p>無需等待下載安裝，立即開玩</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📚</div>
+                    <h3>教育價值</h3>
+                    <p>開源代碼，適合學習遊戲開發基礎</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🌍</div>
+                    <h3>跨平台</h3>
+                    <p>支持 Windows、macOS 和 Linux</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">💯</div>
+                    <h3>完全免費</h3>
+                    <p>MIT 開源許可，自由使用和修改</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 遊戲說明 -->
+    <section class="section" style="background: #f8f9fa;">
+        <div class="container">
+            <h2 class="section-title">遊戲規則</h2>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; margin-top: 2rem; align-items: center;">
+                <div>
+                    <h3 style="color: var(--text-dark); font-size: 1.3rem; margin-bottom: 1rem;">🎮 如何玩</h3>
+                    <ul style="list-style: none; color: var(--text-light); line-height: 2;">
+                        <li>✓ <strong>玩家</strong>：綠色方塊</li>
+                        <li>✓ <strong>敵人</strong>：紅色方塊（從天而降）</li>
+                        <li>✓ <strong>控制</strong>：左右方向鍵移動</li>
+                        <li>✓ <strong>目標</strong>：躲避敵人</li>
+                        <li>✓ <strong>計分</strong>：每躲過一個敵人 = 10 分</li>
+                    </ul>
+                </div>
+                <div style="text-align: center;">
+                    <div style="background: linear-gradient(135deg, #667eea, #764ba2); padding: 3rem; border-radius: 12px; color: white;">
+                        <div style="font-size: 2rem; margin-bottom: 1rem;">
+                            <div style="display: inline-block; width: 40px; height: 40px; background: #00ff00; border-radius: 4px; margin: 0 10px;"></div>
+                            vs
+                            <div style="display: inline-block; width: 30px; height: 30px; background: #ff0000; border-radius: 4px; margin: 0 10px;"></div>
+                        </div>
+                        <p>躲避紅色敵人<br>獲取高分！</p>
                     </div>
                 </div>
             </div>
-            
-            <div class="section">
-                <h2>快速開始</h2>
-                <p>跟著下面的步驟，5 分鐘內開始遊戲：</p>
-                <div class="steps">
-                    <ol>
-                        <li><strong>安裝 Python</strong><br>
-                            訪問 <a href="https://www.python.org/downloads/" target="_blank">python.org</a> 下載 Python 3.8 或更新版本
-                        </li>
-                        <li><strong>創建專案資料夾</strong><br>
-                            在您的電腦上創建一個資料夾來存放遊戲
-                        </li>
-                        <li><strong>下載遊戲文件</strong><br>
-                            <div class="code-block">git clone https://github.com/ccazhu-coder/simple-game.git</div>
-                        </li>
-                        <li><strong>安裝依賴</strong><br>
-                            <div class="code-block">cd simple-game<br>pip install -r requirements.txt</div>
-                        </li>
-                        <li><strong>運行遊戲</strong><br>
-                            <div class="code-block">python main.py</div>
-                        </li>
-                    </ol>
+        </div>
+    </section>
+
+    <!-- 下載區 -->
+    <section class="section download-section" id="download">
+        <div class="container">
+            <h2 class="section-title">立即開始</h2>
+            <p class="section-subtitle">選擇您的平台下載遊戲</p>
+            <div class="platform-grid">
+                <div class="platform-card">
+                    <div class="platform-icon">🪟</div>
+                    <h3>Windows</h3>
+                    <p>推薦版本</p>
+                    <a href="https://github.com/ccazhu-coder/simple-game/archive/refs/heads/master.zip" class="btn btn-primary" style="color: var(--primary-dark); margin-top: 1rem;">下載</a>
+                </div>
+                <div class="platform-card">
+                    <div class="platform-icon">🍎</div>
+                    <h3>macOS</h3>
+                    <p>完全支持</p>
+                    <a href="https://github.com/ccazhu-coder/simple-game/archive/refs/heads/master.zip" class="btn btn-primary" style="color: var(--primary-dark); margin-top: 1rem;">下載</a>
+                </div>
+                <div class="platform-card">
+                    <div class="platform-icon">🐧</div>
+                    <h3>Linux</h3>
+                    <p>完全支持</p>
+                    <a href="https://github.com/ccazhu-coder/simple-game/archive/refs/heads/master.zip" class="btn btn-primary" style="color: var(--primary-dark); margin-top: 1rem;">下載</a>
                 </div>
             </div>
-            
-            <div class="section">
-                <h2>遊戲說明</h2>
-                <div class="feature-grid">
-                    <div class="feature-card">
-                        <div class="emoji">🎮</div>
-                        <h3>玩家</h3>
-                        <p style="text-align: left; display: flex; align-items: center; justify-content: center;">
-                            <span style="display: inline-block; width: 30px; height: 30px; background: #00ff00; margin-right: 8px;"></span>
-                            <span>綠色方塊 - 您控制的角色</span>
-                        </p>
-                    </div>
-                    <div class="feature-card">
-                        <div class="emoji">👾</div>
-                        <h3>敵人</h3>
-                        <p style="text-align: left; display: flex; align-items: center; justify-content: center;">
-                            <span style="display: inline-block; width: 30px; height: 30px; background: #ff0000; margin-right: 8px;"></span>
-                            <span>紅色方塊 - 要避開的敵人</span>
-                        </p>
-                    </div>
+        </div>
+    </section>
+
+    <!-- 系統要求 -->
+    <section class="section" id="requirements">
+        <div class="container">
+            <h2 class="section-title">系統要求</h2>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 2rem;">
+                <div style="background: #f8f9fa; padding: 2rem; border-radius: 12px;">
+                    <h3 style="color: var(--text-dark); margin-bottom: 1rem;">🖥️ 硬件要求</h3>
+                    <ul style="list-style: none; color: var(--text-light);">
+                        <li style="padding: 0.5rem 0; padding-left: 1.5rem;">✓ 100MB 可用硬碟空間</li>
+                        <li style="padding: 0.5rem 0; padding-left: 1.5rem;">✓ 512MB RAM 內存</li>
+                        <li style="padding: 0.5rem 0; padding-left: 1.5rem;">✓ 支持顯卡的計算機</li>
+                    </ul>
                 </div>
-                <p style="margin-top: 20px;"><strong>目標：</strong>使用 <kbd>左箭頭</kbd> 和 <kbd>右箭頭</kbd> 鍵移動，躲避紅色敵人。每成功躲避一個敵人得 10 分！</p>
-            </div>
-            
-            <div class="section">
-                <h2>系統要求</h2>
-                <div class="steps">
-                    <ul style="margin-left: 20px; color: #333;">
-                        <li>Python 3.8 或更新版本</li>
-                        <li>Pygame 2.5.2</li>
-                        <li>Windows、macOS 或 Linux</li>
-                        <li>至少 100MB 硬碟空間</li>
+                <div style="background: #f8f9fa; padding: 2rem; border-radius: 12px;">
+                    <h3 style="color: var(--text-dark); margin-bottom: 1rem;">⚙️ 軟件要求</h3>
+                    <ul style="list-style: none; color: var(--text-light);">
+                        <li style="padding: 0.5rem 0; padding-left: 1.5rem;">✓ Python 3.8 或更新版本</li>
+                        <li style="padding: 0.5rem 0; padding-left: 1.5rem;">✓ Pygame 2.5.2</li>
+                        <li style="padding: 0.5rem 0; padding-left: 1.5rem;">✓ Windows / macOS / Linux</li>
                     </ul>
                 </div>
             </div>
-            
-            <div class="buttons">
-                <a href="https://github.com/ccazhu-coder/simple-game" class="btn btn-primary">
-                    ⭐ 在 GitHub 查看代碼
-                </a>
-                <a href="https://github.com/ccazhu-coder/simple-game/releases" class="btn btn-secondary">
-                    📥 下載可執行檔
-                </a>
+        </div>
+    </section>
+
+    <!-- 統計數據 -->
+    <section class="section" style="background: #f8f9fa;">
+        <div class="container">
+            <h2 class="section-title">項目數據</h2>
+            <div class="stats">
+                <div class="stat-card">
+                    <div class="stat-number">100%</div>
+                    <div class="stat-label">開源免費</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">3</div>
+                    <div class="stat-label">支持平台</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">200+</div>
+                    <div class="stat-label">代碼行數</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">5 min</div>
+                    <div class="stat-label">安裝時間</div>
+                </div>
             </div>
         </div>
-        
-        <footer>
-            <p>© 2026 簡單遊戲 | 開源遊戲項目 | <a href="https://github.com/ccazhu-coder/simple-game" target="_blank" style="color: #667eea;">GitHub</a></p>
-        </footer>
-    </div>
+    </section>
+
+    <!-- 頁尾 -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>🎮 遊戲</h4>
+                    <ul>
+                        <li><a href="#features">特色</a></li>
+                        <li><a href="#download">下載</a></li>
+                        <li><a href="https://github.com/ccazhu-coder/simple-game" target="_blank">GitHub</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>📚 資源</h4>
+                    <ul>
+                        <li><a href="https://github.com/ccazhu-coder/simple-game/blob/master/INSTALL.md" target="_blank">安裝指南</a></li>
+                        <li><a href="https://github.com/ccazhu-coder/simple-game/blob/master/README.md" target="_blank">相關文檔</a></li>
+                        <li><a href="https://www.pygame.org/" target="_blank">Pygame 官網</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>🔗 社交</h4>
+                    <ul>
+                        <li><a href="https://github.com/ccazhu-coder" target="_blank">GitHub 主頁</a></li>
+                        <li><a href="https://github.com/ccazhu-coder/simple-game/issues" target="_blank">提交問題</a></li>
+                        <li><a href="https://github.com/ccazhu-coder/simple-game/blob/master/LICENSE" target="_blank">許可證</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 簡單遊戲 | Simple Game | 開源項目 | MIT License</p>
+                <p style="margin-top: 1rem; opacity: 0.7;">構建者：ccazhu-coder | <a href="https://github.com/ccazhu-coder/simple-game" target="_blank" style="color: var(--primary);">訪問 GitHub</a></p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // 平滑滾動
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        });
+    </script>
 </body>
 </html>
