@@ -13,12 +13,18 @@ window.Api = {
   },
   post: function(action, payload) {
     payload = payload || {};
-    /* Use text/plain to avoid CORS preflight — GAS parses via e.postData.contents */
-    return fetch(APP_CONFIG.API_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'text/plain' },
-      body: JSON.stringify(Object.assign({ action: action }, payload))
-    }).then(function(r){ if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); });
+    /* submitSession 有大量答題陣列，用 no-cors POST fire-and-forget */
+    if (action === 'submitSession') {
+      fetch(APP_CONFIG.API_URL, {
+        method: 'POST', mode: 'no-cors',
+        headers: { 'Content-Type': 'text/plain' },
+        body: JSON.stringify(Object.assign({ action: action }, payload))
+      }).catch(function(){});
+      return Promise.resolve({ ok: true });
+    }
+    /* 其他 action（register/login/forgotPassword）改用 GET + URL params
+       避免 GAS 302 redirect 的 CORS 問題導致 fetch 永久 pending */
+    return this.get(action, payload);
   }
 };
 
