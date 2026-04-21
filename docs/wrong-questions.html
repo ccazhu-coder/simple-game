@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>錯題本｜就業服務乙級 AI 闖關學習系統</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+<div id="app-header"></div>
+<main>
+<section class="section-xs">
+  <div class="container">
+
+    <!-- Page header -->
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:24px">
+      <div>
+        <h2 style="margin:0 0 4px">📖 錯題本</h2>
+        <p style="margin:0">自動收錄練習中答錯的題目，複習後更難再犯同樣的錯誤。</p>
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <button class="btn btn-primary btn-sm" onclick="WQ.retryWrong()">🔄 重做錯題</button>
+        <button class="btn btn-danger btn-sm" onclick="WQ.clearAll()">🗑 清空錯題本</button>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div id="wq-stats" class="mb-16"></div>
+
+    <!-- Filters -->
+    <div class="filter-bar">
+      <span style="font-size:13px;font-weight:800;color:var(--muted)">類別：</span>
+      <div id="wq-cat-filter" style="display:flex;gap:8px;flex-wrap:wrap"></div>
+    </div>
+    <div class="filter-bar" style="margin-bottom:20px">
+      <span style="font-size:13px;font-weight:800;color:var(--muted)">題型：</span>
+      <div id="wq-type-filter" style="display:flex;gap:8px">
+        <button class="filter-chip active" onclick="WQ.filterType(this,'all')">全部題型</button>
+        <button class="filter-chip" onclick="WQ.filterType(this,'single')">單選題</button>
+        <button class="filter-chip" onclick="WQ.filterType(this,'multiple')">複選題</button>
+      </div>
+    </div>
+
+    <!-- VIP banner for non-VIP -->
+    <div id="wq-vip-banner" style="display:none" class="mb-20">
+      <div class="vip-banner">
+        <div class="vip-banner-text">
+          <div class="title">⭐ 升級 VIP，解鎖完整錯題本</div>
+          <div class="desc">免費版最多保存 20 題。升級 VIP 可無上限保存所有錯題。</div>
+        </div>
+        <a href="pricing.html" class="btn btn-dark" style="white-space:nowrap">升級 VIP</a>
+      </div>
+    </div>
+
+    <!-- Wrong questions list -->
+    <div id="wq-list">
+      <div style="text-align:center;padding:60px 0;color:var(--muted)">
+        <div class="spinner" style="margin:0 auto 12px"></div>載入中…
+      </div>
+    </div>
+
+  </div>
+</section>
+</main>
+<div id="app-footer"></div>
+
+<script src="assets/js/config.js"></script>
+<script src="assets/js/app.js"></script>
+<script src="assets/js/auth.js"></script>
+<script src="assets/js/wrong-questions.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  var user = Store.get(APP_CONFIG.KEYS.USER);
+  var banner = document.getElementById('wq-vip-banner');
+  if (banner && (!user || user.role !== 'vip')) banner.style.display = 'block';
+});
+</script>
+</body>
+</html>

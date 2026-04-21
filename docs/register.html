@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>免費註冊｜就業服務乙級 AI 闖關學習系統</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+<div id="app-header"></div>
+<main class="auth-page">
+  <div class="auth-card">
+    <div class="auth-logo-wrap">
+      <div class="nav-brand-badge" style="margin:0 auto 12px;width:52px;height:52px;border-radius:16px;font-size:24px">就</div>
+    </div>
+    <h1 class="auth-title">免費建立帳號</h1>
+    <p class="auth-sub">開始你的就業服務乙級 AI 備考旅程</p>
+
+    <div class="notice-box info mb-20">
+      🆓 免費版功能：快速練習、AI 解析、成績分析、錯題本（最多 20 題）
+    </div>
+
+    <div id="reg-error" class="notice-box danger mb-16" style="display:none"></div>
+    <div id="reg-local-notice" class="notice-box warning mb-16" style="display:none">
+      ⚠️ 目前為 Demo 模式，帳號資料僅儲存於本機。
+    </div>
+
+    <form id="reg-form" onsubmit="RegPage.submit(event)">
+      <div class="form-group">
+        <label class="form-label">姓名 <span class="req">*</span></label>
+        <input type="text" id="reg-name" class="form-control" placeholder="你的名字" required autocomplete="name">
+      </div>
+      <div class="form-group">
+        <label class="form-label">電子郵件 <span class="req">*</span></label>
+        <input type="email" id="reg-email" class="form-control" placeholder="your@email.com" required autocomplete="email">
+      </div>
+      <div class="form-group">
+        <label class="form-label">密碼 <span class="req">*</span></label>
+        <input type="password" id="reg-password" class="form-control" placeholder="至少 8 個字元" required minlength="8" autocomplete="new-password">
+        <div class="form-hint">至少 8 個字元</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">確認密碼 <span class="req">*</span></label>
+        <input type="password" id="reg-password2" class="form-control" placeholder="再次輸入密碼" required autocomplete="new-password">
+      </div>
+      <label class="form-check mb-20">
+        <input type="checkbox" class="form-check-input" id="reg-agree" required>
+        <span class="form-check-label">我同意 <a href="#" style="color:var(--primary)">服務條款</a> 與 <a href="#" style="color:var(--primary)">隱私政策</a></span>
+      </label>
+      <button type="submit" class="btn btn-primary btn-block btn-lg" id="reg-btn">免費建立帳號</button>
+    </form>
+
+    <div class="auth-divider">或</div>
+    <div style="text-align:center">
+      <span style="font-size:14px;color:var(--muted);font-weight:600">已有帳號？</span>
+      <a href="login.html" style="font-size:14px;font-weight:800;color:var(--primary);margin-left:6px">立即登入 →</a>
+    </div>
+  </div>
+</main>
+<div id="app-footer"></div>
+
+<script src="assets/js/config.js"></script>
+<script src="assets/js/app.js"></script>
+<script src="assets/js/auth.js"></script>
+<script>
+window.RegPage = {
+  submit: function(e) {
+    e.preventDefault();
+    var name   = document.getElementById('reg-name').value.trim();
+    var email  = document.getElementById('reg-email').value.trim();
+    var pwd    = document.getElementById('reg-password').value;
+    var pwd2   = document.getElementById('reg-password2').value;
+    var errEl  = document.getElementById('reg-error');
+    var btn    = document.getElementById('reg-btn');
+
+    errEl.style.display = 'none';
+    if (pwd !== pwd2) { errEl.textContent='兩次密碼不一致，請重新輸入'; errEl.style.display='block'; return; }
+    if (pwd.length < 8) { errEl.textContent='密碼至少需要 8 個字元'; errEl.style.display='block'; return; }
+
+    btn.disabled = true; btn.textContent = '建立帳號中…';
+
+    Auth.register(name, email, pwd).then(function(r) {
+      if (r.ok) {
+        if (r.isLocal) document.getElementById('reg-local-notice').style.display = 'block';
+        Toast.success('帳號建立成功！歡迎加入，' + name);
+        setTimeout(function(){ location.href = 'member-center.html'; }, 800);
+      } else {
+        errEl.textContent = r.message || '註冊失敗，請稍後再試';
+        errEl.style.display = 'block';
+        btn.disabled = false; btn.textContent = '免費建立帳號';
+      }
+    });
+  }
+};
+document.addEventListener('DOMContentLoaded', function(){
+  Auth.redirectIfLoggedIn('member-center.html');
+});
+</script>
+</body>
+</html>

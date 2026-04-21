@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>成績分析｜就業服務乙級 AI 闖關學習系統</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+<div id="app-header"></div>
+<main>
+<section class="section-xs">
+  <div class="container" style="max-width:860px">
+
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:24px">
+      <h2 style="margin:0">📊 本次成績分析</h2>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <a href="quiz.html" class="btn btn-primary btn-sm">🔄 再練一次</a>
+        <a href="index.html" class="btn btn-secondary btn-sm">🏠 首頁</a>
+      </div>
+    </div>
+
+    <!-- Score card -->
+    <div id="result-main" style="display:none"></div>
+
+    <div id="result-score-card" class="result-score-card">
+      <div class="spinner" style="margin:0 auto"></div>
+    </div>
+
+    <!-- Category stats -->
+    <div class="card mb-24">
+      <h3 style="margin-bottom:20px">各類別成績</h3>
+      <div id="result-category">
+        <div style="text-align:center;padding:20px;color:var(--muted)">載入中…</div>
+      </div>
+    </div>
+
+    <!-- VIP upsell banner -->
+    <div class="vip-banner mb-24" id="result-vip-banner" style="display:none">
+      <div class="vip-banner-text">
+        <div class="title">⭐ 升級 VIP，強化你的弱點！</div>
+        <div class="desc">複選題專項強化 + 正式模擬考 + 完整錯題管理，一次解決</div>
+      </div>
+      <a href="pricing.html" class="btn btn-dark" style="white-space:nowrap">查看 VIP 方案</a>
+    </div>
+
+    <!-- CTA grid -->
+    <div id="result-cta"></div>
+
+    <!-- Detail section -->
+    <div class="card mt-24">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px">
+        <h3 style="margin:0">逐題詳解</h3>
+        <div style="display:flex;gap:8px">
+          <button class="filter-chip active" onclick="ResultPage.filterDetail(this,'all')">全部</button>
+          <button class="filter-chip" onclick="ResultPage.filterDetail(this,'wrong')">只看錯題</button>
+          <button class="filter-chip" onclick="ResultPage.filterDetail(this,'correct')">只看答對</button>
+        </div>
+      </div>
+      <div id="result-details">
+        <div style="text-align:center;padding:20px;color:var(--muted)">載入中…</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+</main>
+<div id="app-footer"></div>
+
+<script src="assets/js/config.js"></script>
+<script src="assets/js/app.js"></script>
+<script src="assets/js/auth.js"></script>
+<script src="assets/js/result.js"></script>
+<script>
+/* Extend ResultPage with filter */
+document.addEventListener('DOMContentLoaded', function() {
+  /* Show VIP banner for non-VIP — only when stats are present */
+  var stats = Store.get(APP_CONFIG.KEYS.QUIZ_RESULT);
+  if (!stats || !stats.details) return;
+  var user = Store.get(APP_CONFIG.KEYS.USER);
+  if (!user || user.role !== 'vip') {
+    var banner = document.getElementById('result-vip-banner');
+    if (banner) banner.style.display = 'flex';
+  }
+});
+
+window.ResultPage = window.ResultPage || {};
+ResultPage.filterDetail = function(btn, type) {
+  document.querySelectorAll('#result-details .result-detail-item').forEach(function(el) {
+    if (type === 'all')     el.style.display = '';
+    else if (type === 'wrong')   el.style.display = el.classList.contains('wrong')   ? '' : 'none';
+    else if (type === 'correct') el.style.display = el.classList.contains('correct') ? '' : 'none';
+  });
+  document.querySelectorAll('.filter-chip').forEach(function(c){ c.classList.remove('active'); });
+  btn.classList.add('active');
+};
+ResultPage.toggleDetail = function(el) {
+  var analysis = el.nextElementSibling;
+  if (analysis) {
+    var open = analysis.style.display === 'block';
+    analysis.style.display = open ? 'none' : 'block';
+    var arrow = el.querySelector('span:last-child span:last-child');
+    if (arrow) arrow.textContent = open ? '▼' : '▲';
+  }
+};
+</script>
+</body>
+</html>

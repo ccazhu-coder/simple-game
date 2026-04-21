@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>登入｜就業服務乙級 AI 闖關學習系統</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+<div id="app-header"></div>
+<main class="auth-page">
+  <div class="auth-card">
+    <div class="auth-logo-wrap">
+      <div class="nav-brand-badge" style="margin:0 auto 12px;width:52px;height:52px;border-radius:16px;font-size:24px">就</div>
+    </div>
+    <h1 class="auth-title">歡迎回來</h1>
+    <p class="auth-sub">登入你的就服乙級 AI 教練帳號</p>
+
+    <div id="login-error" class="notice-box danger mb-16" style="display:none"></div>
+    <div id="login-local-notice" class="notice-box warning mb-16" style="display:none">
+      ⚠️ 目前為 Demo 模式，登入資料僅儲存於本機。
+    </div>
+
+    <form id="login-form" onsubmit="LoginPage.submit(event)">
+      <div class="form-group">
+        <label class="form-label">電子郵件 <span class="req">*</span></label>
+        <input type="email" id="login-email" class="form-control" placeholder="your@email.com" required autocomplete="email">
+      </div>
+      <div class="form-group">
+        <label class="form-label">密碼 <span class="req">*</span></label>
+        <input type="password" id="login-password" class="form-control" placeholder="請輸入密碼" required autocomplete="current-password">
+        <div style="text-align:right;margin-top:6px">
+          <a href="forgot-password.html" style="font-size:12px;color:var(--primary);font-weight:700">忘記密碼？</a>
+        </div>
+      </div>
+      <button type="submit" class="btn btn-primary btn-block btn-lg" id="login-btn">登入</button>
+    </form>
+
+    <div class="auth-divider">或</div>
+
+    <div style="text-align:center">
+      <span style="font-size:14px;color:var(--muted);font-weight:600">還沒有帳號？</span>
+      <a href="register.html" style="font-size:14px;font-weight:800;color:var(--primary);margin-left:6px">免費註冊 →</a>
+    </div>
+
+    <div style="margin-top:24px;padding-top:20px;border-top:1px solid var(--border);text-align:center">
+      <a href="quiz.html" style="font-size:13px;color:var(--muted);font-weight:600">不登入，直接體驗快速練習 →</a>
+    </div>
+  </div>
+</main>
+<div id="app-footer"></div>
+
+<script src="assets/js/config.js"></script>
+<script src="assets/js/app.js"></script>
+<script src="assets/js/auth.js"></script>
+<script>
+window.LoginPage = {
+  submit: function(e) {
+    e.preventDefault();
+    var email    = document.getElementById('login-email').value.trim();
+    var password = document.getElementById('login-password').value;
+    var btn      = document.getElementById('login-btn');
+    var errEl    = document.getElementById('login-error');
+
+    if (!email || !password) { errEl.textContent='請填寫所有欄位'; errEl.style.display='block'; return; }
+
+    btn.disabled = true; btn.textContent = '登入中…';
+    errEl.style.display = 'none';
+
+    Auth.login(email, password).then(function(r) {
+      if (r.ok) {
+        if (r.isLocal) document.getElementById('login-local-notice').style.display='block';
+        Toast.success('登入成功！歡迎回來，' + (r.user.name || email));
+        var redirect = Store.get('_after_login') || 'member-center.html';
+        Store.del('_after_login');
+        setTimeout(function(){ location.href = redirect; }, 800);
+      } else {
+        errEl.textContent = r.message || '帳號或密碼錯誤';
+        errEl.style.display = 'block';
+        btn.disabled = false; btn.textContent = '登入';
+      }
+    });
+  }
+};
+
+document.addEventListener('DOMContentLoaded', function(){
+  Auth.redirectIfLoggedIn('member-center.html');
+});
+</script>
+</body>
+</html>

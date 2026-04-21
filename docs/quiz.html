@@ -1,158 +1,245 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>快速練習｜就業服務乙級 AI 闖關學習系統</title>
-  <link rel="stylesheet" href="assets/css/style.css" />
-  <script src="assets/js/config.js"></script>
-  <script src="assets/js/app.js"></script>
+  <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
-  <nav class="nav">
-    <div class="container nav-inner">
-      <div class="brand"><div class="brand-badge">就</div><span>就服乙級 <span style="color:var(--blue)">AI 教練</span></span></div>
-      <div class="nav-actions">
-        <a class="btn btn-secondary" href="index.html">返回首頁</a>
-      </div>
+<div id="app-header"></div>
+<main>
+<section>
+<div class="container quiz-layout">
+
+  <!-- ── Main quiz card ──────────────────────────────────── -->
+  <div>
+    <!-- Loading state -->
+    <div id="quiz-loading" class="quiz-card" style="text-align:center;padding:60px 28px">
+      <div class="spinner" style="margin:0 auto 16px"></div>
+      <div style="font-weight:700;color:var(--muted)">正在載入題目…</div>
     </div>
-  </nav>
 
-  <div id="head"></div>
-  <section>
-    <div class="container quiz-wrap">
-      <div class="quiz-card">
-        <div id="loadingState" style="text-align:center;padding:60px 0">
-          <div class="loader" style="margin:0 auto;margin-bottom:20px"></div>
-          <div>正在加載題目...</div>
-        </div>
-        <div id="quizContent" style="display:none">
-          <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
-            <strong id="progress" style="font-size:18px">答題進度</strong>
-            <span class="notice">後端串接版本</span>
-          </div>
-          <div class="progress"><div id="progressBar" class="progress-bar" style="width:0%"></div></div>
-          <div class="meta-row">
-            <span id="questionType" class="badge badge-blue">類型</span>
-            <span id="questionTag" class="badge badge-purple">標籤</span>
-          </div>
-          <h1 id="questionTitle" class="q-title">題目載入中...</h1>
-          <div id="optionsContainer"></div>
-          <div class="quiz-actions">
-            <button class="btn btn-primary" type="button" id="submitBtn">確認送出</button>
-            <button class="btn btn-secondary" type="button" id="nextBtn" style="display:none">下一題</button>
-            <a class="btn btn-dark" href="index.html">返回首頁</a>
-          </div>
-          <div class="analysis" id="analysisSection" style="display:none">
-            <h3>AI 教練解析</h3>
-            <div class="analysis-block">
-              <div class="analysis-label">核心解析</div>
-              <div id="analysisCoreText" class="analysis-text">載入中...</div>
-            </div>
-            <div class="analysis-block">
-              <div class="analysis-label">記憶口訣</div>
-              <div id="analysisMemoText" class="analysis-text">載入中...</div>
-            </div>
-            <div class="analysis-block">
-              <div class="analysis-label">陷阱提示</div>
-              <div id="analysisTrapText" class="analysis-text">載入中...</div>
-            </div>
-          </div>
-        </div>
+    <!-- Quiz content -->
+    <div id="quiz-content" class="quiz-card" style="display:none">
+      <!-- Top bar -->
+      <div class="quiz-topbar">
+        <span class="quiz-progress-text" id="q-progress">1 / 10</span>
+        <div class="exam-timer" id="q-timer" style="font-size:14px;padding:6px 14px;display:none">⏱ 00:00</div>
+        <button class="btn btn-secondary btn-sm" id="q-home-btn">🏠 返回首頁</button>
       </div>
 
-      <div class="side-card">
-        <div style="font-size:20px;font-weight:900;margin-bottom:12px">本次模式</div>
-        <div class="notice">快速練習</div>
-        <div class="list-card">
-          <div style="font-weight:900">功能說明</div>
-          <div style="margin-top:10px;color:var(--muted);font-weight:600">從後端 API 自動派題，0 延遲開始答題。</div>
-        </div>
+      <!-- Progress bar -->
+      <div class="progress-wrap mb-4">
+        <div class="progress-bar" id="q-progress-bar" style="width:10%"></div>
       </div>
+
+      <!-- Meta badges -->
+      <div class="quiz-meta">
+        <span class="badge badge-blue" id="q-type-badge">單選題</span>
+        <span class="badge badge-purple" id="q-cat-badge">類別</span>
+      </div>
+
+      <!-- Question -->
+      <h2 class="quiz-question-title" id="q-title">題目載入中…</h2>
+
+      <!-- Options -->
+      <div id="q-options"></div>
+
+      <!-- Multi-select hint -->
+      <div id="q-multi-hint" class="notice-box warning mb-16" style="display:none">
+        ✅ 複選題：可選擇多個答案，選完後再按「確認送出」。
+      </div>
+
+      <!-- Actions -->
+      <div class="quiz-actions">
+        <button class="btn btn-secondary" id="q-prev-btn" disabled>← 上一題</button>
+        <button class="btn btn-primary"   id="q-submit-btn">確認送出</button>
+        <button class="btn btn-dark"      id="q-next-btn" style="display:none">下一題 →</button>
+      </div>
+
+      <!-- Analysis -->
+      <div id="q-analysis" style="display:none"></div>
     </div>
-  </section>
 
-  <script>
-    let currentQuestion = null;
-    let selectedAnswer = null;
-    let answered = false;
+    <!-- Error state -->
+    <div id="quiz-error" class="quiz-card" style="display:none;text-align:center;padding:60px 28px">
+      <div style="font-size:48px;margin-bottom:16px">⚠️</div>
+      <h3 style="margin-bottom:8px">題目載入失敗</h3>
+      <p style="margin-bottom:24px">無法連接後端 API，請檢查網路連線後重新整理。</p>
+      <button class="btn btn-primary" onclick="location.reload()">重新整理</button>
+      <a href="index.html" class="btn btn-secondary" style="margin-left:10px">返回首頁</a>
+    </div>
+  </div>
 
-    document.getElementById('head').innerHTML = AppHelpers.renderHeader('快速練習', '後端 API 串接版本 - 自動派題、0 延遲');
+  <!-- ── Side card ────────────────────────────────────────── -->
+  <div class="quiz-side-card">
+    <div class="side-title">本次練習</div>
+    <div id="side-mode-badge" class="notice-box info mb-16">快速練習</div>
 
-    async function loadQuestion() {
-      try {
-        const result = await Api.post('getNextQuestion', { mode: 'quick' });
-        if (result.success && result.question) {
-          currentQuestion = result.question;
-          selectedAnswer = null;
-          answered = false;
-          renderQuestion();
-        }
-      } catch (e) {
-        console.error('Error loading question:', e);
-      }
+    <div class="stat-row"><span>已作答</span><span class="stat-val" id="side-answered">0</span></div>
+    <div class="stat-row"><span>答對</span><span class="stat-val" style="color:var(--success-dark)" id="side-correct">0</span></div>
+    <div class="stat-row"><span>答錯</span><span class="stat-val" style="color:var(--danger-dark)"  id="side-wrong">0</span></div>
+    <div class="stat-row"><span>剩餘</span><span class="stat-val" id="side-remaining">—</span></div>
+
+    <div class="divider"></div>
+
+    <div class="side-title">快速操作</div>
+    <a href="index.html" class="btn btn-secondary btn-block btn-sm mb-8">🏠 返回首頁</a>
+    <a href="pricing.html" class="btn btn-vip btn-block btn-sm">⭐ 升級 VIP</a>
+
+    <div class="divider"></div>
+    <div style="font-size:12px;color:var(--muted);font-weight:600;line-height:1.6">
+      💡 提示：提交後才能查看 AI 解析與前往下一題。
+    </div>
+  </div>
+
+</div>
+</section>
+</main>
+<div id="app-footer"></div>
+
+<script src="assets/js/config.js"></script>
+<script src="assets/js/app.js"></script>
+<script src="assets/js/auth.js"></script>
+<script src="assets/js/questions-data.js"></script>
+<script src="assets/js/quiz-engine.js"></script>
+<script>
+(function() {
+  /* ── State ─────────────────────────────────────────────── */
+  var mode = App.param('mode') || 'quick';
+  var correctCount = 0, wrongCount = 0;
+
+  /* ── DOM refs ───────────────────────────────────────────── */
+  var elLoading   = document.getElementById('quiz-loading');
+  var elContent   = document.getElementById('quiz-content');
+  var elError     = document.getElementById('quiz-error');
+  var elProgress  = document.getElementById('q-progress');
+  var elProgBar   = document.getElementById('q-progress-bar');
+  var elTypeBadge = document.getElementById('q-type-badge');
+  var elCatBadge  = document.getElementById('q-cat-badge');
+  var elTitle     = document.getElementById('q-title');
+  var elOptions   = document.getElementById('q-options');
+  var elMultiHint = document.getElementById('q-multi-hint');
+  var elAnalysis  = document.getElementById('q-analysis');
+  var elPrevBtn   = document.getElementById('q-prev-btn');
+  var elSubmitBtn = document.getElementById('q-submit-btn');
+  var elNextBtn   = document.getElementById('q-next-btn');
+  var elHomeBtn   = document.getElementById('q-home-btn');
+  var elSideMode  = document.getElementById('side-mode-badge');
+
+  /* ── Mode label ─────────────────────────────────────────── */
+  var modeLabels = { quick:'快速練習', multi:'複選強化', wrong:'錯題複習' };
+  if (elSideMode) elSideMode.textContent = modeLabels[mode] || '快速練習';
+
+  /* ── Render current question ────────────────────────────── */
+  function showQuestion() {
+    var idx   = QuizEngine.getCurrentIndex();
+    var q     = QuizEngine.getCurrentQuestion();
+    var total = QuizEngine.getTotalCount();
+    if (!q) return;
+
+    var submitted = QuizEngine.isSubmitted();
+
+    /* progress */
+    elProgress.textContent    = (idx+1) + ' / ' + total;
+    elProgBar.style.width     = ((idx+1)/total*100) + '%';
+
+    /* type & category */
+    elTypeBadge.textContent = q.type === 'multiple' ? '✅ 複選題' : '✓ 單選題';
+    elTypeBadge.className   = 'badge ' + (q.type==='multiple' ? 'badge-orange' : 'badge-blue');
+    elCatBadge.textContent  = '#' + q.category;
+
+    /* title */
+    elTitle.textContent = q.title;
+
+    /* multi hint */
+    elMultiHint.style.display = (q.type === 'multiple' && !submitted) ? 'block' : 'none';
+
+    /* options */
+    elOptions.innerHTML = QuizEngine.renderOptions(idx);
+
+    /* analysis */
+    if (submitted) {
+      elAnalysis.innerHTML   = QuizEngine.renderAnalysis();
+      elAnalysis.style.display = 'block';
+    } else {
+      elAnalysis.style.display = 'none';
     }
 
-    function renderQuestion() {
-      document.getElementById('loadingState').style.display = 'none';
-      document.getElementById('quizContent').style.display = 'block';
-      
-      const progress = `${currentQuestion.questionNumber} / ${currentQuestion.totalQuestions}`;
-      const percent = (currentQuestion.questionNumber / currentQuestion.totalQuestions) * 100;
-      
-      document.getElementById('progress').textContent = `答題進度 ${progress}`;
-      document.getElementById('progressBar').style.width = percent + '%';
-      document.getElementById('questionType').textContent = currentQuestion.type === 'single' ? '✓ 單選題' : '✓ 複選題';
-      document.getElementById('questionTag').textContent = `#${currentQuestion.category}`;
-      document.getElementById('questionTitle').textContent = currentQuestion.title;
+    /* buttons */
+    elPrevBtn.disabled         = QuizEngine.isFirstQuestion();
+    elSubmitBtn.style.display  = submitted ? 'none' : 'inline-flex';
+    elNextBtn.style.display    = submitted ? 'inline-flex' : 'none';
+    elNextBtn.textContent      = QuizEngine.isLastQuestion() ? '🏁 完成作答' : '下一題 →';
 
-      const optionsHtml = currentQuestion.options.map(opt => `
-        <div class="option" data-key="${opt.key}" onclick="selectOption('${opt.key}')">
-          <div class="option-key">${opt.key}</div>
-          <div><strong>${opt.text}</strong></div>
-        </div>
-      `).join('');
-      
-      document.getElementById('optionsContainer').innerHTML = optionsHtml;
-      document.getElementById('analysisSection').style.display = 'none';
-      document.getElementById('submitBtn').style.display = 'inline-flex';
-      document.getElementById('nextBtn').style.display = 'none';
+    /* side stats */
+    document.getElementById('side-answered').textContent  = QuizEngine.getSubmittedCount();
+    document.getElementById('side-correct').textContent   = correctCount;
+    document.getElementById('side-wrong').textContent     = wrongCount;
+    document.getElementById('side-remaining').textContent = total - idx - 1;
+  }
+
+  /* ── Submit ─────────────────────────────────────────────── */
+  elSubmitBtn.addEventListener('click', function() {
+    var ans = QuizEngine.getAnswer();
+    if (!ans || ans.length === 0) { Toast.warning('請先選擇答案再送出'); return; }
+    var result = QuizEngine.submitCurrent();
+    if (!result) { Toast.warning('請先選擇答案再送出'); return; }
+    if (result.isCorrect) correctCount++; else wrongCount++;
+    showQuestion();
+    elAnalysis.scrollIntoView({ behavior:'smooth', block:'nearest' });
+  });
+
+  /* ── Next ───────────────────────────────────────────────── */
+  elNextBtn.addEventListener('click', function() {
+    if (QuizEngine.isLastQuestion()) {
+      elNextBtn.disabled = true; elNextBtn.textContent = '計算成績…';
+      var stats = QuizEngine.finishSession();
+      QuizEngine.updateStudyStats(stats);
+      setTimeout(function(){ location.href = 'result.html'; }, 400);
+    } else {
+      QuizEngine.moveNext();
+      showQuestion();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
+  });
 
-    function selectOption(key) {
-      if (answered) return;
-      selectedAnswer = key;
-      document.querySelectorAll('.option').forEach(opt => {
-        opt.classList.toggle('selected', opt.dataset.key === key);
-      });
-    }
+  /* ── Prev ───────────────────────────────────────────────── */
+  elPrevBtn.addEventListener('click', function() {
+    QuizEngine.movePrev();
+    showQuestion();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
 
-    document.getElementById('submitBtn').addEventListener('click', async () => {
-      if (!selectedAnswer) {
-        alert('請選擇一個答案');
-        return;
+  /* ── Home ───────────────────────────────────────────────── */
+  elHomeBtn.addEventListener('click', function() {
+    var hasAnswers = QuizEngine.getTotalCount() > 0;
+    if (!hasAnswers) { location.href = 'index.html'; return; }
+    Modal.confirm({
+      title: '確定要離開？',
+      body: '離開後本次答題進度將不會被保存（已提交的答案已記入錯題本）。',
+      okText: '確定離開', okClass: 'btn-danger', cancelText: '繼續作答'
+    }).then(function(ok) { if (ok) location.href = 'index.html'; });
+  });
+
+  /* ── Init ───────────────────────────────────────────────── */
+  document.addEventListener('DOMContentLoaded', function() {
+    QuizEngine.init(mode).then(function(ok) {
+      elLoading.style.display = 'none';
+      if (ok && QuizEngine.getTotalCount() > 0) {
+        elContent.style.display = 'block';
+        showQuestion();
+        QuizEngine.prerender(1);
+      } else {
+        elError.style.display = 'block';
       }
-      
-      answered = true;
-      document.getElementById('submitBtn').style.display = 'none';
-      document.getElementById('nextBtn').style.display = 'inline-flex';
-      
-      const result = await Api.post('submitAnswer', {
-        questionId: currentQuestion.id,
-        answer: selectedAnswer
-      });
-      
-      if (result.success) {
-        document.getElementById('analysisCoreText').textContent = result.analysis.core;
-        document.getElementById('analysisMemoText').textContent = result.analysis.memo;
-        document.getElementById('analysisTrapText').textContent = result.analysis.trap;
-        document.getElementById('analysisSection').style.display = 'block';
-      }
+    }).catch(function() {
+      elLoading.style.display = 'none';
+      elError.style.display   = 'block';
     });
-
-    document.getElementById('nextBtn').addEventListener('click', loadQuestion);
-
-    loadQuestion();
-  </script>
+  });
+})();
+</script>
 </body>
 </html>

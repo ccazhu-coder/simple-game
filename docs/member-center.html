@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>會員中心｜就業服務乙級 AI 闖關學習系統</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+<div id="app-header"></div>
+<main>
+
+  <!-- Member hero -->
+  <div class="member-hero">
+    <div class="container" id="mc-profile">
+      <div class="member-avatar">?</div>
+      <h2 style="color:#fff">載入中…</h2>
+    </div>
+  </div>
+
+  <section class="section-xs">
+    <div class="container">
+
+      <!-- Tabs -->
+      <div class="member-tabs">
+        <div class="member-tab active" data-tab="overview" onclick="MCTab.show('overview')">總覽</div>
+        <div class="member-tab" data-tab="history"  onclick="MCTab.show('history')">練習紀錄</div>
+        <div class="member-tab" data-tab="vip"      onclick="MCTab.show('vip')">方案狀態</div>
+      </div>
+
+      <!-- Tab: Overview -->
+      <div class="member-tab-content active" id="mc-tab-overview">
+        <div id="mc-stats" class="mb-28">
+          <div class="grid-4 gap-16">
+            <div class="card-sm text-center" style="background:#fff">
+              <div class="spinner" style="margin:0 auto 8px;width:24px;height:24px;border-width:3px"></div>
+              <div style="font-size:12px;color:var(--muted)">載入中</div>
+            </div>
+          </div>
+        </div>
+        <!-- Quick actions -->
+        <h3 class="mb-16">快速入口</h3>
+        <div class="grid-3 gap-16">
+          <a href="quiz.html" class="card card-hover" style="display:block;text-decoration:none">
+            <div style="font-size:28px;margin-bottom:10px">⚡</div>
+            <div style="font-weight:900;font-size:15px;margin-bottom:4px">快速練習</div>
+            <div style="font-size:13px;color:var(--muted)">立即開始答題</div>
+          </a>
+          <a href="wrong-questions.html" class="card card-hover" style="display:block;text-decoration:none">
+            <div style="font-size:28px;margin-bottom:10px">📖</div>
+            <div style="font-weight:900;font-size:15px;margin-bottom:4px">錯題本</div>
+            <div style="font-size:13px;color:var(--muted)">複習錯題，補強弱點</div>
+          </a>
+          <a href="multi-select.html" class="card card-hover" style="display:block;text-decoration:none">
+            <div style="font-size:28px;margin-bottom:10px">✅</div>
+            <div style="font-weight:900;font-size:15px;margin-bottom:4px">複選強化</div>
+            <div style="font-size:13px;color:var(--muted)">針對複選題專項訓練</div>
+          </a>
+          <a href="mock-exam.html" class="card card-hover" style="display:block;text-decoration:none">
+            <div style="font-size:28px;margin-bottom:10px">📝</div>
+            <div style="font-weight:900;font-size:15px;margin-bottom:4px">模擬考</div>
+            <div style="font-size:13px;color:var(--muted)">80題完整驗收</div>
+          </a>
+          <a href="result.html" class="card card-hover" style="display:block;text-decoration:none">
+            <div style="font-size:28px;margin-bottom:10px">📊</div>
+            <div style="font-weight:900;font-size:15px;margin-bottom:4px">最近成績</div>
+            <div style="font-size:13px;color:var(--muted)">查看上次練習結果</div>
+          </a>
+          <a href="pricing.html" class="card card-hover" style="display:block;text-decoration:none;background:var(--vip-light);border-color:var(--vip)">
+            <div style="font-size:28px;margin-bottom:10px">⭐</div>
+            <div style="font-weight:900;font-size:15px;margin-bottom:4px">升級 VIP</div>
+            <div style="font-size:13px;color:var(--muted)">解鎖全部功能</div>
+          </a>
+        </div>
+      </div>
+
+      <!-- Tab: History -->
+      <div class="member-tab-content" id="mc-tab-history">
+        <h3 class="mb-16">練習紀錄（最近 20 次）</h3>
+        <div id="mc-history">
+          <div style="text-align:center;padding:48px 0;color:var(--muted)">
+            <div class="spinner" style="margin:0 auto 12px"></div>載入中…
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab: VIP -->
+      <div class="member-tab-content" id="mc-tab-vip">
+        <h3 class="mb-16">方案狀態</h3>
+        <div id="mc-vip">
+          <div style="text-align:center;padding:48px 0;color:var(--muted)">
+            <div class="spinner" style="margin:0 auto 12px"></div>載入中…
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+</main>
+<div id="app-footer"></div>
+
+<script src="assets/js/config.js"></script>
+<script src="assets/js/app.js"></script>
+<script src="assets/js/auth.js"></script>
+<script src="assets/js/member-center.js"></script>
+</body>
+</html>

@@ -1,55 +1,269 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>就業服務乙級 AI 闖關學習系統｜AI教練陪跑・高效通關</title>
-  <meta name="description" content="就業服務乙級 AI 闖關學習系統，結合 AI 教練解析、複選題特訓、錯題複習與模擬考，幫助更快看懂考點、記住重點、避開陷阱。" />
-  <link rel="stylesheet" href="assets/css/style.css" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>就業服務乙級 AI 闖關學習系統｜AI 教練陪跑・高效通關</title>
+  <meta name="description" content="就業服務乙級 AI 闖關學習系統。AI 教練解析、複選題強化、錯題追蹤、模擬考，從刷題進化成真正會解題。">
+  <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
-  <nav class="nav">
-    <div class="container nav-inner">
-      <div class="brand"><div class="brand-badge">就</div><span>就服乙級 <span style="color:var(--blue)">AI 教練</span></span></div>
-      <div class="nav-actions">
-        <a class="btn btn-primary" href="quiz.html">立即開始體驗</a>
+<div id="app-header"></div>
+<main>
+
+<!-- ── Hero ──────────────────────────────────────────────── -->
+<section class="hero">
+  <div class="container">
+    <div class="grid-2" style="align-items:center;gap:60px">
+      <div>
+        <div class="hero-eyebrow">🎯 就業服務乙級備考首選</div>
+        <h1 class="hero-title">
+          不只是刷題，<br>而是用 <span class="text-gradient">AI 教練模式</span><br>真正通關
+        </h1>
+        <p class="hero-sub">每題都有 AI 解析、記憶口訣與陷阱提示。單選/複選分流、錯題本、模擬考形成完整備考閉環。從刷題進化成真正會解題。</p>
+        <div class="hero-actions">
+          <a href="quiz.html" class="btn btn-primary btn-lg">🚀 立即免費體驗</a>
+          <a href="pricing.html" class="btn btn-outline-vip btn-lg">⭐ 查看 VIP 方案</a>
+        </div>
+        <div class="hero-stats">
+          <div><div class="hero-stat-val">3+</div><div class="hero-stat-lbl">練習模式</div></div>
+          <div><div class="hero-stat-val">0 延遲</div><div class="hero-stat-lbl">題目派發</div></div>
+          <div><div class="hero-stat-val">AI</div><div class="hero-stat-lbl">教練解析</div></div>
+          <div><div class="hero-stat-val">100%</div><div class="hero-stat-lbl">免費體驗入口</div></div>
+        </div>
+      </div>
+      <div>
+        <img src="assets/img/hero-placeholder.svg" alt="系統示意圖" style="border-radius:24px;box-shadow:var(--shadow-xl)">
       </div>
     </div>
-  </nav>
+  </div>
+</section>
 
-  <section class="page-hero">
-    <div class="container">
-      <h1 class="page-title">就業服務乙級<br><span style="background:linear-gradient(135deg,var(--blue) 0%, var(--blue-dark) 100%);-webkit-background-clip:text;background-clip:text;color:transparent">AI 闖關學習系統</span></h1>
-      <p class="page-sub">不只是刷題，而是用 AI 教練模式，幫助更快看懂考點、記住重點、避開陷阱。從刷題進化成真正會解題。</p>
+<!-- ── Core Value Props ───────────────────────────────────── -->
+<section class="section section-light">
+  <div class="container">
+    <h2 class="section-title">為什麼選擇 AI 教練備考系統？</h2>
+    <p class="section-sub">傳統刷題只給你答案，AI 教練給你思路、口訣、和陷阱分析。</p>
+    <div class="grid-3">
+      <div class="card card-hover">
+        <div class="feature-icon" style="background:#EFF6FF">🤖</div>
+        <div class="feature-title">AI 教練級解析</div>
+        <div class="feature-desc">作答後立即查看核心考點、記憶口訣、陷阱提示與法規依據。不只知道答案，更懂得為什麼。</div>
+      </div>
+      <div class="card card-hover">
+        <div class="feature-icon" style="background:#F0FDF4">⚡</div>
+        <div class="feature-title">題目 0 延遲派發</div>
+        <div class="feature-desc">全題預載本地切換，進入練習頁就能立刻開始作答，不浪費任何備考時間。</div>
+      </div>
+      <div class="card card-hover">
+        <div class="feature-icon" style="background:#FEF3C7">📚</div>
+        <div class="feature-title">完整備考閉環</div>
+        <div class="feature-desc">快速練習 → 查看成績 → 找到弱點 → 錯題複習 → 複選強化 → 模擬考驗收，形成高效備考循環。</div>
+      </div>
     </div>
-  </section>
+  </div>
+</section>
 
-  <section style="padding:60px 0">
-    <div class="container">
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center">
-        <div>
-          <h2 style="font-size:32px;font-weight:900;margin:0 0 16px">系統特色</h2>
-          <ul style="list-style:none;padding:0">
-            <li style="padding:12px 0;border-bottom:1px solid var(--line)"><strong>✓ AI 教練級解析</strong><br><span style="color:var(--muted);font-weight:600">作答後立即查看考點解析、記憶口訣與陷阱提示</span></li>
-            <li style="padding:12px 0;border-bottom:1px solid var(--line)"><strong>✓ 題目 0 延遲派發</strong><br><span style="color:var(--muted);font-weight:600">後端自動派題，即刻開始答題</span></li>
-            <li style="padding:12px 0;border-bottom:1px solid var(--line)"><strong>✓ 複選題強化模式</strong><br><span style="color:var(--muted);font-weight:600">針對最容易失分的題型進行專項訓練</span></li>
-            <li style="padding:12px 0;border-bottom:1px solid var(--line)"><strong>✓ 錯題循環複習</strong><br><span style="color:var(--muted);font-weight:600">自動收錄錯題，更有策略的複習</span></li>
-            <li style="padding:12px 0"><strong>✓ 模擬考與進度分析</strong><br><span style="color:var(--muted);font-weight:600">完整驗收實力，建立通關節奏</span></li>
-          </ul>
-          <div style="margin-top:28px">
-            <a class="btn btn-primary" href="quiz.html" style="width:100%">立即開始體驗</a>
+<!-- ── Feature Grid ───────────────────────────────────────── -->
+<section class="section">
+  <div class="container">
+    <h2 class="section-title">完整功能一覽</h2>
+    <p class="section-sub">六大核心功能，全面覆蓋備考需求。</p>
+    <div class="grid-3">
+      <a href="quiz.html" class="card card-hover" style="display:block">
+        <div class="flex gap-12 items-start">
+          <div style="font-size:32px">⚡</div>
+          <div>
+            <div class="feature-title">快速練習</div>
+            <div class="feature-desc">自動派題，作答後立即查看 AI 解析。免費可用，立即開始。</div>
+            <div class="badge badge-green mt-8">免費</div>
           </div>
         </div>
-        <div class="notice">系統已與後端 API 連接<br><br>API: https://script.google.com/macros/s/...<br><br>功能包括：自動派題、題目 0 延遲、即時回饋</div>
+      </a>
+      <a href="multi-select.html" class="card card-hover" style="display:block">
+        <div class="flex gap-12 items-start">
+          <div style="font-size:32px">✅</div>
+          <div>
+            <div class="feature-title">複選題強化</div>
+            <div class="feature-desc">專攻最容易失分的複選題型，針對性提升命中率。</div>
+            <div class="badge badge-vip mt-8">⭐ VIP</div>
+          </div>
+        </div>
+      </a>
+      <a href="wrong-questions.html" class="card card-hover" style="display:block">
+        <div class="flex gap-12 items-start">
+          <div style="font-size:32px">📖</div>
+          <div>
+            <div class="feature-title">錯題本</div>
+            <div class="feature-desc">自動收錄每次答錯的題目，分類篩選，一鍵重做。</div>
+            <div class="badge badge-green mt-8">免費（部分）</div>
+          </div>
+        </div>
+      </a>
+      <a href="mock-exam.html" class="card card-hover" style="display:block">
+        <div class="flex gap-12 items-start">
+          <div style="font-size:32px">📝</div>
+          <div>
+            <div class="feature-title">模擬考</div>
+            <div class="feature-desc">80 題、120 分鐘，單選 60 + 複選 20，完整驗收實力。</div>
+            <div class="badge badge-vip mt-8">⭐ VIP</div>
+          </div>
+        </div>
+      </a>
+      <a href="result.html" class="card card-hover" style="display:block">
+        <div class="flex gap-12 items-start">
+          <div style="font-size:32px">📊</div>
+          <div>
+            <div class="feature-title">成績分析</div>
+            <div class="feature-desc">每次作答後自動產出正確率、類別統計，找出真正弱點。</div>
+            <div class="badge badge-green mt-8">免費</div>
+          </div>
+        </div>
+      </a>
+      <a href="pricing.html" class="card card-hover" style="background:var(--vip-light);border-color:var(--vip);display:block">
+        <div class="flex gap-12 items-start">
+          <div style="font-size:32px">⭐</div>
+          <div>
+            <div class="feature-title">VIP 升級</div>
+            <div class="feature-desc">解鎖全部功能，完整題庫，一套系統打通考試。</div>
+            <div class="badge badge-vip mt-8">立即開通</div>
+          </div>
+        </div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ── Who Is It For ──────────────────────────────────────── -->
+<section class="section section-light">
+  <div class="container">
+    <div class="grid-2" style="gap:60px;align-items:center">
+      <div>
+        <h2>這套系統適合你嗎？</h2>
+        <p style="margin-bottom:28px">如果你有以下狀況，就業服務乙級 AI 教練是你的最佳備考夥伴。</p>
+        <div class="steps">
+          <div class="step"><div class="step-num" style="background:var(--success)">✓</div><div><div class="step-title">正在準備就業服務乙級考試</div><div class="step-desc">想要系統化備考，不只是漫無目的地刷題。</div></div></div>
+          <div class="step"><div class="step-num" style="background:var(--success)">✓</div><div><div class="step-title">刷了很多題，但記不住、講不出來</div><div class="step-desc">需要 AI 解析幫你理解考點背後的邏輯。</div></div></div>
+          <div class="step"><div class="step-num" style="background:var(--success)">✓</div><div><div class="step-title">複選題容易失分</div><div class="step-desc">需要專項訓練，針對最容易錯的題型重點強化。</div></div></div>
+          <div class="step"><div class="step-num" style="background:var(--success)">✓</div><div><div class="step-title">想用更有效率的方式備考</div><div class="step-desc">希望每一分備考時間都產生最大學習效益。</div></div></div>
+        </div>
+      </div>
+      <div>
+        <div class="card card-dark">
+          <div style="font-size:20px;font-weight:900;color:#fff;margin-bottom:20px">🏆 AI 教練備考 vs 傳統刷題</div>
+          <div class="stat-row" style="color:#E2E8F0;border-color:rgba(255,255,255,.08)"><span>每題只有答案</span><span style="color:#FCA5A5">傳統刷題</span></div>
+          <div class="stat-row" style="color:#E2E8F0;border-color:rgba(255,255,255,.08)"><span>AI 解析 + 口訣 + 陷阱</span><span style="color:#86EFAC">AI 教練 ✓</span></div>
+          <div class="stat-row" style="color:#E2E8F0;border-color:rgba(255,255,255,.08)"><span>錯題自動追蹤</span><span style="color:#86EFAC">AI 教練 ✓</span></div>
+          <div class="stat-row" style="color:#E2E8F0;border-color:rgba(255,255,255,.08)"><span>弱點分類統計</span><span style="color:#86EFAC">AI 教練 ✓</span></div>
+          <div class="stat-row" style="color:#E2E8F0;border-color:rgba(255,255,255,.08)"><span>複選題專項強化</span><span style="color:#86EFAC">AI 教練 ✓</span></div>
+          <div class="stat-row" style="color:#E2E8F0;border-color:rgba(255,255,255,.08)"><span>正式模擬考</span><span style="color:#86EFAC">AI 教練 ✓</span></div>
+          <div style="margin-top:24px">
+            <a href="quiz.html" class="btn btn-primary btn-block">立即免費體驗</a>
+          </div>
+        </div>
       </div>
     </div>
-  </section>
+  </div>
+</section>
 
-  <footer class="footer">
-    <div class="container footer-inner">
-      <div>就服乙級 AI 教練</div>
-      <div>© 2024 就業服務乙級 AI 闖關學習系統</div>
+<!-- ── Comparison Table ───────────────────────────────────── -->
+<section class="section">
+  <div class="container">
+    <h2 class="section-title">免費版 vs VIP 版</h2>
+    <p class="section-sub">免費版讓你體驗 AI 教練備考的威力；VIP 版讓你完整征服考試。</p>
+    <div class="compare-wrap">
+      <table class="compare-table">
+        <thead>
+          <tr>
+            <th style="text-align:left">功能</th>
+            <th>免費版</th>
+            <th class="vip-col">⭐ VIP 版</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>快速練習（每次最多 10 題）</td><td><span class="chk">✓</span></td><td><span class="chk">✓ 無限制</span></td></tr>
+          <tr><td>AI 教練解析（考點、口訣、陷阱）</td><td><span class="chk">✓</span></td><td><span class="chk">✓</span></td></tr>
+          <tr><td>成績頁面與類別統計</td><td><span class="chk">✓</span></td><td><span class="chk">✓</span></td></tr>
+          <tr><td>錯題本（最多 20 題）</td><td><span class="chk">✓ 部分</span></td><td><span class="chk">✓ 無上限</span></td></tr>
+          <tr><td>複選題強化模式</td><td><span class="crs">✗</span></td><td><span class="chk">✓</span></td></tr>
+          <tr><td>正式模擬考（80題・120分鐘）</td><td><span class="crs">✗</span></td><td><span class="chk">✓</span></td></tr>
+          <tr><td>完整錯題本管理</td><td><span class="crs">✗</span></td><td><span class="chk">✓</span></td></tr>
+          <tr><td>學習分析報告</td><td><span class="crs">✗</span></td><td><span class="chk">✓</span></td></tr>
+          <tr><td>完整題庫（無限制）</td><td><span class="crs">✗</span></td><td><span class="chk">✓</span></td></tr>
+        </tbody>
+      </table>
     </div>
-  </footer>
+    <div class="text-center mt-32">
+      <a href="pricing.html" class="btn btn-vip btn-xl">查看 VIP 方案價格 →</a>
+    </div>
+  </div>
+</section>
+
+<!-- ── Learning Flow ──────────────────────────────────────── -->
+<section class="section section-light">
+  <div class="container">
+    <h2 class="section-title">備考流程</h2>
+    <p class="section-sub">從免費體驗到升級 VIP，循序漸進建立考試實力。</p>
+    <div class="grid-2" style="gap:48px;align-items:start">
+      <div class="steps">
+        <div class="step"><div class="step-num">1</div><div><div class="step-title">免費體驗快速練習</div><div class="step-desc">不需登入，直接開始答題，體驗 AI 教練解析的威力。</div></div></div>
+        <div class="step"><div class="step-num">2</div><div><div class="step-title">查看成績與弱點</div><div class="step-desc">每次練習後自動產出正確率與類別統計，找到需要加強的地方。</div></div></div>
+        <div class="step"><div class="step-num">3</div><div><div class="step-title">免費註冊，保存紀錄</div><div class="step-desc">建立帳號後可保存錯題本與學習紀錄，不怕重來。</div></div></div>
+        <div class="step"><div class="step-num" style="background:var(--vip)">⭐</div><div><div class="step-title">升級 VIP，解鎖全功能</div><div class="step-desc">開啟複選強化、模擬考、完整錯題本，全面備考。</div></div></div>
+        <div class="step"><div class="step-num" style="background:var(--success)">✓</div><div><div class="step-title">通關！拿到就業服務乙級</div><div class="step-desc">有系統、有方法，考試只是時間問題。</div></div></div>
+      </div>
+      <div>
+        <div class="card card-vip" style="margin-bottom:20px">
+          <div style="font-size:28px;margin-bottom:12px">⭐</div>
+          <h3 style="margin-bottom:8px">立即升級 VIP</h3>
+          <p style="margin-bottom:20px">複選強化 + 模擬考 + 完整錯題本 + 學習分析，一次開通全部。</p>
+          <a href="pricing.html" class="btn btn-vip btn-block">查看 VIP 方案</a>
+        </div>
+        <div class="card">
+          <div style="font-size:28px;margin-bottom:12px">🆓</div>
+          <h3 style="margin-bottom:8px">免費體驗入口</h3>
+          <p style="margin-bottom:20px">不需登入，直接開始體驗 AI 教練解析。感受差異，再決定要不要升級。</p>
+          <a href="quiz.html" class="btn btn-primary btn-block">立即免費體驗</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── FAQ ───────────────────────────────────────────────── -->
+<section class="section">
+  <div class="container" style="max-width:720px">
+    <h2 class="section-title">常見問題</h2>
+    <p class="section-sub" style="margin-bottom:36px">有任何疑問，歡迎透過 LINE 客服詢問。</p>
+    <div class="faq-item"><div class="faq-q" onclick="this.classList.toggle('open');this.nextElementSibling.classList.toggle('open')">免費版有哪些限制？<span class="faq-icon">+</span></div><div class="faq-a">免費版每次快速練習最多 10 題，可查看 AI 解析與成績。錯題本最多保存 20 題。複選題強化、模擬考功能需要 VIP。</div></div>
+    <div class="faq-item"><div class="faq-q" onclick="this.classList.toggle('open');this.nextElementSibling.classList.toggle('open')">如何升級 VIP？<span class="faq-icon">+</span></div><div class="faq-a">VIP 採人工開通，請聯絡 LINE 客服或發送 Email 詢問。開通後我們會在後端將您的帳號升級為 VIP，即可解鎖全部功能。</div></div>
+    <div class="faq-item"><div class="faq-q" onclick="this.classList.toggle('open');this.nextElementSibling.classList.toggle('open')">需要先下載 APP 嗎？<span class="faq-icon">+</span></div><div class="faq-a">不需要！這是純網頁系統，可在任何裝置的瀏覽器直接使用，不需要安裝任何 APP。</div></div>
+    <div class="faq-item"><div class="faq-q" onclick="this.classList.toggle('open');this.nextElementSibling.classList.toggle('open')">手機可以用嗎？<span class="faq-icon">+</span></div><div class="faq-a">完全可以！系統採手機版優先設計，在手機上也能流暢答題、查看解析。</div></div>
+    <div class="faq-item"><div class="faq-q" onclick="this.classList.toggle('open');this.nextElementSibling.classList.toggle('open')">題目內容是最新的嗎？<span class="faq-icon">+</span></div><div class="faq-a">題庫持續更新，涵蓋就業服務法、職業訓練法、勞動基準法等核心考科。如發現題目有誤，請透過 LINE 客服回報。</div></div>
+    <div class="faq-item"><div class="faq-q" onclick="this.classList.toggle('open');this.nextElementSibling.classList.toggle('open')">可以在多個裝置使用嗎？<span class="faq-icon">+</span></div><div class="faq-a">可以。只要使用同一帳號登入，在不同裝置上都能使用。學習紀錄會同步儲存。</div></div>
+  </div>
+</section>
+
+<!-- ── Final CTA ──────────────────────────────────────────── -->
+<section class="section section-primary">
+  <div class="container text-center">
+    <h2 style="color:#fff;margin-bottom:12px">準備好開始了嗎？</h2>
+    <p style="color:rgba(255,255,255,.8);margin-bottom:36px;font-size:17px">免費體驗就業服務乙級 AI 教練，感受和傳統刷題的差異。</p>
+    <div class="hero-actions" style="justify-content:center">
+      <a href="quiz.html"    class="btn btn-xl" style="background:#fff;color:var(--primary)">🚀 立即免費體驗</a>
+      <a href="register.html" class="btn btn-xl" style="background:rgba(255,255,255,.15);color:#fff;border:1.5px solid rgba(255,255,255,.4)">📝 免費註冊</a>
+      <a href="pricing.html" class="btn btn-vip btn-xl">⭐ 升級 VIP</a>
+    </div>
+    <div style="margin-top:32px;color:rgba(255,255,255,.6);font-size:13px">
+      有問題？<a href="https://lin.ee/qZt97JY" target="_blank" style="color:#fff;font-weight:700">LINE 客服</a> 隨時為你服務
+    </div>
+  </div>
+</section>
+
+</main>
+<div id="app-footer"></div>
+<script src="assets/js/config.js"></script>
+<script src="assets/js/app.js"></script>
+<script src="assets/js/auth.js"></script>
 </body>
 </html>

@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>模擬考｜就業服務乙級 AI 闖關學習系統</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+<div id="app-header"></div>
+<main>
+<section class="section-xs">
+<div class="container">
+
+  <!-- ── Start screen ──────────────────────────────────── -->
+  <div id="exam-start-screen" style="display:none;max-width:680px;margin:0 auto">
+    <div class="card text-center card-lg">
+      <div style="font-size:56px;margin-bottom:16px">📝</div>
+      <h1 style="margin-bottom:10px">正式模擬考</h1>
+      <p style="margin-bottom:24px;font-size:15px;color:var(--muted)">
+        依官方考試規格隨機抽題，每次考卷皆不同
+      </p>
+      <div class="grid-3 gap-12 mb-24">
+        <div class="card-sm text-center" style="background:var(--bg-2)">
+          <div style="font-size:28px;font-weight:900;color:var(--primary)">80</div>
+          <div style="font-size:12px;color:var(--muted);font-weight:700">題數</div>
+        </div>
+        <div class="card-sm text-center" style="background:var(--bg-2)">
+          <div style="font-size:28px;font-weight:900;color:var(--primary)">120</div>
+          <div style="font-size:12px;color:var(--muted);font-weight:700">分鐘</div>
+        </div>
+        <div class="card-sm text-center" style="background:var(--bg-2)">
+          <div style="font-size:28px;font-weight:900;color:var(--primary)">60</div>
+          <div style="font-size:12px;color:var(--muted);font-weight:700">分及格</div>
+        </div>
+      </div>
+      <!-- 計分規則說明 -->
+      <div class="card-sm mb-20" style="background:var(--bg-2);text-align:left;font-size:13px;line-height:2">
+        <div style="font-weight:800;margin-bottom:6px">📋 計分規則</div>
+        <div>✅ <strong>單選題</strong> 60 題 × 1 分 = 60 分</div>
+        <div>✅ <strong>複選題</strong> 20 題 × 2 分 = 40 分（<em>全對才得分，答錯不扣分</em>）</div>
+        <div>🎯 滿分 100 分，<strong>60 分及格</strong></div>
+      </div>
+      <!-- 共同科目說明 -->
+      <div class="card-sm mb-24" style="background:var(--bg-2);text-align:left;font-size:13px;line-height:2">
+        <div style="font-weight:800;margin-bottom:6px">🔷 共同科目（單選 16 題）</div>
+        <div>職業安全衛生、工作倫理與職業道德、環境保護、節能減碳，各抽 4 題</div>
+      </div>
+      <div class="notice-box warning mb-24" style="text-align:left">
+        ⚠️ <strong>注意事項：</strong><br>
+        • 考試中途不可查看解析，交卷後才會顯示<br>
+        • 倒數計時結束自動交卷<br>
+        • 本次為 VIP 功能，請確認已開通 VIP
+      </div>
+      <button class="btn btn-primary btn-xl btn-block" onclick="MockExam.start()">🚀 開始模擬考</button>
+      <div style="margin-top:14px">
+        <a href="index.html" style="font-size:13px;color:var(--muted)">← 返回首頁</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Exam screen ────────────────────────────────────── -->
+  <div id="exam-screen" style="display:none">
+    <div class="quiz-layout">
+      <!-- Main exam card -->
+      <div>
+        <div class="quiz-card">
+          <!-- Top bar -->
+          <div class="quiz-topbar">
+            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+              <span class="quiz-progress-text" id="exam-progress">1 / 80</span>
+              <span class="badge badge-orange">模擬考</span>
+            </div>
+            <div id="exam-timer" class="exam-timer">⏱ 120:00</div>
+          </div>
+          <div class="progress-wrap mb-16">
+            <div class="progress-bar" id="exam-progress-bar" style="width:1.25%"></div>
+          </div>
+          <div class="quiz-meta">
+            <span class="badge" id="exam-type-badge">單選題</span>
+            <span class="badge badge-purple" id="exam-cat-badge">類別</span>
+            <span class="badge badge-gray" id="exam-question-no">Q1</span>
+          </div>
+          <h2 class="quiz-question-title" id="exam-title">題目載入中…</h2>
+          <div id="exam-options"></div>
+          <!-- 複選提示 -->
+          <div id="exam-multi-hint" class="notice-box warning mb-16" style="display:none;font-size:13px">
+            ✅ <strong>複選題</strong>：可選多個答案，需全部正確才得分（答錯不扣分）
+          </div>
+          <div class="quiz-actions">
+            <button class="btn btn-secondary" id="exam-prev" onclick="MockExam.prev()">← 上一題</button>
+            <button class="btn btn-primary"   id="exam-next" onclick="MockExam.next()">下一題 →</button>
+            <button class="btn btn-danger btn-sm" onclick="MockExam.forceSubmit()" style="margin-left:auto">提前交卷</button>
+          </div>
+        </div>
+      </div>
+      <!-- Side: answer map -->
+      <div class="quiz-side-card">
+        <div class="side-title">作答狀況</div>
+        <div style="font-size:11px;color:var(--muted);margin-bottom:10px;font-weight:600;line-height:2">
+          <span style="background:var(--primary);color:#fff;border-radius:4px;padding:2px 7px">■</span> 目前
+          <span style="background:var(--primary-light);color:var(--primary);border-radius:4px;padding:2px 7px;margin-left:4px">■</span> 單選已答
+          <span style="background:#FEF3C7;color:#92400E;border:2px solid #F59E0B;border-radius:4px;padding:2px 7px;margin-left:4px">■</span> 複選已答
+          <span style="background:var(--bg-2);color:var(--muted);border-radius:4px;padding:2px 7px;margin-left:4px">■</span> 未作答
+        </div>
+        <div id="exam-answer-map" style="display:grid;grid-template-columns:repeat(5,1fr);gap:4px"></div>
+        <div class="divider"></div>
+        <div style="font-size:12px;color:var(--muted);font-weight:600;line-height:1.7">
+          💡 考試中不可查看解析。完成作答或倒數結束後自動交卷。
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Finish screen ──────────────────────────────────── -->
+  <div id="exam-finish-screen" style="display:none;max-width:720px;margin:0 auto">
+    <div id="exam-finish-content"></div>
+  </div>
+
+</div>
+</section>
+</main>
+<div id="app-footer"></div>
+
+<script src="assets/js/config.js"></script>
+<script src="assets/js/app.js"></script>
+<script src="assets/js/auth.js"></script>
+<script src="assets/js/questions-data.js"></script>
+<script src="assets/js/mock-exam.js"></script>
+</body>
+</html>
