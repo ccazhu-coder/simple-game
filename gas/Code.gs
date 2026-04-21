@@ -16,7 +16,7 @@
      5. 複製 Web App URL 貼回 docs/assets/js/config.js 的 API_URL
    ============================================================ */
 
-var SPREADSHEET_ID = ''; // ← 貼上你的 Spreadsheet ID
+var SPREADSHEET_ID = '1YWNFjYvNt3-ce1WGyQ75hJS4h_lNYg2Ft-YM8Qn9Qgs';
 
 var SHEET = { USERS: 'Users', SESSIONS: 'Sessions' };
 
