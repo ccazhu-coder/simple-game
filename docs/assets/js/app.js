@@ -134,26 +134,26 @@ window.Loading = {
 
 /* ── VIP Utilities (canonical — used by every page) ─────────*/
 window.VipUtils = {
-  /* true only when vip_plan is set AND not expired */
+  /* VIP if vip_plan has a value; only non-VIP when vip_expires IS set and has passed */
   isVipActive: function(u) {
     if (!u) return false;
-    var plan = u.vip_plan;
-    if (plan === null || plan === undefined || String(plan).trim() === '' || String(plan).trim() === '0') return false;
-    var exp = u.vip_expires;
-    if (!exp || String(exp).trim() === '') return false;
+    var plan = String(u.vip_plan || '').trim();
+    if (plan === '' || plan === '0') return false;
+    var exp = String(u.vip_expires || '').trim();
+    if (exp === '') return true;             /* no expiry → perpetual VIP */
     var t = new Date(exp).getTime();
-    if (isNaN(t)) return false;
+    if (isNaN(t)) return true;              /* unparseable date → treat as perpetual */
     return Date.now() <= t;
   },
   /* 'free' | 'active' | 'expiring' (<=7d) | 'expired' */
   getStatus: function(u) {
     if (!u) return 'free';
-    var plan = u.vip_plan;
-    if (!plan || String(plan).trim() === '' || String(plan).trim() === '0') return 'free';
-    var exp = u.vip_expires;
-    if (!exp || String(exp).trim() === '') return 'free';
+    var plan = String(u.vip_plan || '').trim();
+    if (plan === '' || plan === '0') return 'free';
+    var exp = String(u.vip_expires || '').trim();
+    if (exp === '') return 'active';         /* no expiry → perpetual VIP */
     var t = new Date(exp).getTime();
-    if (isNaN(t)) return 'free';
+    if (isNaN(t)) return 'active';
     var now = Date.now();
     if (now > t) return 'expired';
     if (Math.ceil((t - now) / 86400000) <= 7) return 'expiring';

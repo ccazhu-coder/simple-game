@@ -97,22 +97,22 @@ function respond(data) {
 
 /* ── VIP Helpers (server-side, mirrors frontend VipUtils) ── */
 function _isVipActive(user) {
-  var plan = user.vip_plan;
-  if (!plan || String(plan).trim() === '' || String(plan).trim() === '0') return false;
-  var exp = user.vip_expires;
-  if (!exp || String(exp).trim() === '') return false;
+  var plan = String(user.vip_plan || '').trim();
+  if (plan === '' || plan === '0') return false;
+  var exp = String(user.vip_expires || '').trim();
+  if (exp === '') return true;              /* no expiry → perpetual VIP */
   var t = new Date(exp).getTime();
-  if (isNaN(t)) return false;
+  if (isNaN(t)) return true;
   return Date.now() <= t;
 }
 
 function _getVipStatus(user) {
-  var plan = user.vip_plan;
-  if (!plan || String(plan).trim() === '' || String(plan).trim() === '0') return 'free';
-  var exp = user.vip_expires;
-  if (!exp || String(exp).trim() === '') return 'free';
+  var plan = String(user.vip_plan || '').trim();
+  if (plan === '' || plan === '0') return 'free';
+  var exp = String(user.vip_expires || '').trim();
+  if (exp === '') return 'active';          /* no expiry → perpetual VIP */
   var t = new Date(exp).getTime();
-  if (isNaN(t)) return 'free';
+  if (isNaN(t)) return 'active';
   var now = Date.now();
   if (now > t) return 'expired';
   if (Math.ceil((t - now) / 86400000) <= 7) return 'expiring';
