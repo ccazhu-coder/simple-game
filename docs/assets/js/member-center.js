@@ -25,6 +25,28 @@ document.addEventListener('DOMContentLoaded', function() {
       '</div>';
   }
 
+  /* ── Quick-action 6th card (VIP-aware) ──────────────────── */
+  var elVipCard = document.getElementById('mc-vip-quick-card');
+  if (elVipCard) {
+    if (isVip) {
+      var cardLabel = vipSt === 'expiring' ? 'VIP 即將到期' : 'VIP 使用中';
+      var cardDesc  = vipSt === 'expiring' ? '查看方案狀態' : '您已解鎖完整功能';
+      elVipCard.innerHTML =
+        '<a href="pricing.html" class="card card-hover" style="display:block;text-decoration:none;background:var(--vip-light);border-color:var(--vip)">' +
+          '<div style="font-size:28px;margin-bottom:10px">⭐</div>' +
+          '<div style="font-weight:900;font-size:15px;margin-bottom:4px">' + cardLabel + '</div>' +
+          '<div style="font-size:13px;color:var(--muted)">' + cardDesc + '</div>' +
+        '</a>';
+    } else {
+      elVipCard.innerHTML =
+        '<a href="pricing.html" class="card card-hover" style="display:block;text-decoration:none;background:var(--vip-light);border-color:var(--vip)">' +
+          '<div style="font-size:28px;margin-bottom:10px">⭐</div>' +
+          '<div style="font-weight:900;font-size:15px;margin-bottom:4px">升級 VIP</div>' +
+          '<div style="font-size:13px;color:var(--muted)">解鎖全部功能</div>' +
+        '</a>';
+    }
+  }
+
   /* ── Study stats ─────────────────────────────────────────── */
   var stats = Store.get(APP_CONFIG.KEYS.STUDY_STATS, { totalSessions:0, totalQuestions:0, totalCorrect:0, sessions:[] });
   var overallAcc = stats.totalQuestions > 0 ? Math.round(stats.totalCorrect / stats.totalQuestions * 100) : 0;
