@@ -19,6 +19,15 @@ window.QuizEngine = (function() {
     optCache:     {}    // { id: htmlString } pre-rendered options
   };
 
+  /* ── HTML escape ───────────────────────────────────────── */
+  function _esc(s) {
+    return String(s)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
   /* ── Fisher-Yates shuffle ──────────────────────────────── */
   function _shuffle(arr) {
     var a = arr.slice();
@@ -273,7 +282,7 @@ window.QuizEngine = (function() {
         return '<div class="' + cls + '" data-key="' + opt.key + '" ' +
           'onclick="QuizEngine.selectAnswer(\'' + opt.key + '\')">' +
           '<div class="option-key">' + opt.key + '</div>' +
-          '<div class="option-text">' + opt.text + '</div>' +
+          '<div class="option-text">' + _esc(opt.text) + '</div>' +
           suffix +
           '</div>';
       }).join('');
@@ -299,22 +308,22 @@ window.QuizEngine = (function() {
       if (q.analysis.keypoint) {
         blocks += '<div class="analysis-block">' +
           '<div class="analysis-label">🎯 核心解析</div>' +
-          '<div class="analysis-text">' + q.analysis.keypoint + '</div></div>';
+          '<div class="analysis-text">' + _esc(q.analysis.keypoint) + '</div></div>';
       }
       if (q.analysis.memory) {
         blocks += '<div class="analysis-block">' +
           '<div class="analysis-label">💡 記憶口訣</div>' +
-          '<div class="analysis-text">' + q.analysis.memory + '</div></div>';
+          '<div class="analysis-text">' + _esc(q.analysis.memory) + '</div></div>';
       }
       if (q.analysis.trap) {
         blocks += '<div class="analysis-block">' +
           '<div class="analysis-label">⚠️ 陷阱提示</div>' +
-          '<div class="analysis-text">' + q.analysis.trap + '</div></div>';
+          '<div class="analysis-text">' + _esc(q.analysis.trap) + '</div></div>';
       }
       if (q.analysis.lawReference) {
         blocks += '<div class="analysis-block">' +
           '<div class="analysis-label">📋 法規依據</div>' +
-          '<div class="analysis-text">' + q.analysis.lawReference + '</div></div>';
+          '<div class="analysis-text">' + _esc(q.analysis.lawReference) + '</div></div>';
       }
 
       return '<div class="analysis-section">' +

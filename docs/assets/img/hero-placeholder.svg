@@ -173,7 +173,7 @@
 
 <!-- Big score -->
 <text x="394" y="336" font-family="system-ui,-apple-system,sans-serif" font-size="38" font-weight="900" fill="#3B82F6">18</text>
-<text x="436" y="336" font-family="system-ui,-apple-system,sans-serif" font-size="15" font-weight="500" fill="#94A3B8">&nbsp;/ 100 分</text>
+<text x="436" y="336" font-family="system-ui,-apple-system,sans-serif" font-size="15" font-weight="500" fill="#94A3B8"> / 100 分</text>
 
 <!-- Divider -->
 <rect x="394" y="346" width="156" height="1" fill="#E2E8F0"/>
