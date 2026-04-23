@@ -132,13 +132,71 @@ window.Loading = {
   hide: function() { this._ensure(); this._el.classList.remove('active'); }
 };
 
-/* ── VIP helper (canonical check used by all nav/guard logic) */
-function _isVipUser(u) {
-  if (!u) return false;
-  if (u.role === 'vip') return true;
-  var p = String(u.vip_plan || '').trim();
-  return p !== '' && p !== '0';
-}
+/* ── VIP Utilities (canonical — used by every page) ─────────*/
+window.VipUtils = {
+  /* true only when vip_plan is set AND not expired */
+  isVipActive: function(u) {
+    if (!u) return false;
+    var plan = u.vip_plan;
+    if (plan === null || plan === undefined || String(plan).trim() === '' || String(plan).trim() === '0') return false;
+    var exp = u.vip_expires;
+    if (!exp || String(exp).trim() === '') return false;
+    var t = new Date(exp).getTime();
+    if (isNaN(t)) return false;
+    return Date.now() <= t;
+  },
+  /* 'free' | 'active' | 'expiring' (<=7d) | 'expired' */
+  getStatus: function(u) {
+    if (!u) return 'free';
+    var plan = u.vip_plan;
+    if (!plan || String(plan).trim() === '' || String(plan).trim() === '0') return 'free';
+    var exp = u.vip_expires;
+    if (!exp || String(exp).trim() === '') return 'free';
+    var t = new Date(exp).getTime();
+    if (isNaN(t)) return 'free';
+    var now = Date.now();
+    if (now > t) return 'expired';
+    if (Math.ceil((t - now) / 86400000) <= 7) return 'expiring';
+    return 'active';
+  },
+  /* days remaining; 0 if today/past; null if no expiry */
+  getDaysLeft: function(u) {
+    if (!u || !u.vip_expires) return null;
+    var t = new Date(u.vip_expires).getTime();
+    if (isNaN(t)) return null;
+    var diff = t - Date.now();
+    return diff < 0 ? 0 : Math.ceil(diff / 86400000);
+  },
+  /* '7days' | '3days' | '1day' | 'expired' | null */
+  getReminderStage: function(u) {
+    if (!u || !u.vip_expires) return null;
+    var t = new Date(u.vip_expires).getTime();
+    if (isNaN(t)) return null;
+    var d = Math.ceil((t - Date.now()) / 86400000);
+    if (d < 0)  return 'expired';
+    if (d <= 1) return '1day';
+    if (d <= 3) return '3days';
+    if (d <= 7) return '7days';
+    return null;
+  },
+  getReminderText: function(u) {
+    var map = {
+      '7days':   '提醒您，VIP 會員資格將於 7 天內到期，為避免學習中斷，建議提前完成續費。',
+      '3days':   '提醒您，VIP 會員資格即將到期，若需繼續使用完整題庫、模擬考與分析功能，請儘早續費。',
+      '1day':    '您的 VIP 會員資格將於 1 天內到期，為避免功能中斷，請立即續費。',
+      'expired': '您的 VIP 會員資格已到期，目前已恢復為免費會員。若需繼續使用 VIP 功能，請重新開通。'
+    };
+    return map[this.getReminderStage(u)] || null;
+  },
+  formatExpiry: function(u) {
+    if (!u || !u.vip_expires) return '—';
+    var d = new Date(u.vip_expires);
+    if (isNaN(d.getTime())) return '—';
+    return d.getFullYear() + '/' +
+      String(d.getMonth()+1).padStart(2,'0') + '/' +
+      String(d.getDate()).padStart(2,'0');
+  }
+};
 
 /* ── Nav / Footer builders ───────────────────────────────────*/
 var _NAV = [
@@ -160,7 +218,7 @@ function _navHTML(user) {
   }).join('');
   var ad, am;
   if (user) {
-    var vip = _isVipUser(user);
+    var vip = VipUtils.isVipActive(user);
     ad = '<span class="badge '+(vip?'badge-vip':'badge-gray')+'">'+(vip?'⭐ VIP':'免費版')+'</span>' +
       '<a href="member-center.html" class="btn btn-secondary btn-sm">會員中心</a>' +
       '<button class="btn btn-sm" style="color:var(--muted)" onclick="Auth.logout()">登出</button>';
@@ -249,11 +307,15 @@ window.App = {
       if (redirectBack) Store.set('_after_login', location.href);
       location.href = 'login.html'; return false;
     }
-    if (!_isVipUser(user)) {
+    if (!VipUtils.isVipActive(user)) {
+      var _st = VipUtils.getStatus(user);
       Modal.confirm({
-        title:'⭐ 此功能需要 VIP 會員',
-        body:'升級 VIP 即可解鎖複選題強化、模擬考、完整錯題本與學習分析。',
-        okText:'立即升級 VIP', okClass:'btn-vip', cancelText:'稍後再說'
+        title:  _st === 'expired' ? '⭐ VIP 已到期' : '⭐ 此功能需要 VIP 會員',
+        body:   _st === 'expired'
+                  ? '您的 VIP 已到期，請續費後即可繼續使用此功能。'
+                  : '升級 VIP 即可解鎖複選題強化、模擬考、完整錯題本與學習分析。',
+        okText: _st === 'expired' ? '立即續費 VIP' : '立即升級 VIP',
+        okClass:'btn-vip', cancelText:'稍後再說'
       }).then(function(ok){ if(ok) location.href='pricing.html'; });
       return false;
     }

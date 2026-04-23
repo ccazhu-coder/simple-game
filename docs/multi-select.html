@@ -97,7 +97,7 @@
 (function() {
   var FREE_LIMIT = APP_CONFIG.FREE.MULTI_FREE_COUNT;
   var user = Store.get(APP_CONFIG.KEYS.USER);
-  var isVip = user && user.role === 'vip';
+  var isVip = VipUtils.isVipActive(user);
   var correctCount = 0, wrongCount = 0, answeredCount = 0;
 
   var elLoading  = document.getElementById('multi-loading');

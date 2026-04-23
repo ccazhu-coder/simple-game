@@ -72,7 +72,7 @@
 document.addEventListener('DOMContentLoaded', function() {
   var user = Store.get(APP_CONFIG.KEYS.USER);
   var banner = document.getElementById('wq-vip-banner');
-  if (banner && (!user || user.role !== 'vip')) banner.style.display = 'block';
+  if (banner && !VipUtils.isVipActive(user)) banner.style.display = 'block';
 });
 </script>
 </body>

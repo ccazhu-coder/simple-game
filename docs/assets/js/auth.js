@@ -14,11 +14,7 @@ window.Auth = {
   },
 
   isVip: function() {
-    var u = Store.get(APP_CONFIG.KEYS.USER);
-    if (!u) return false;
-    if (u.role === 'vip') return true;
-    var p = String(u.vip_plan || '').trim();
-    return p !== '' && p !== '0';
+    return VipUtils.isVipActive(Store.get(APP_CONFIG.KEYS.USER));
   },
 
   /* ── clearUserData ────────────────────────────────────────

@@ -20,7 +20,7 @@ var SPREADSHEET_ID = '1YWNFjYvNt3-ce1WGyQ75hJS4h_lNYg2Ft-YM8Qn9Qgs';
 
 var SHEET = { USERS: 'Users', SESSIONS: 'Sessions' };
 
-var USER_HEADERS    = ['email','name','password','role','token','created','vip_plan','vip_expires'];
+var USER_HEADERS    = ['email','name','password','role','token','created','vip_plan','vip_expires','last_vip_reminder_stage','last_vip_reminder_at'];
 var SESSION_HEADERS = ['timestamp','email','mode','total','correct','accuracy'];
 
 /* ── 一次性初始化（手動執行一次即可）────────────────────── */
@@ -29,14 +29,25 @@ function setup() {
 
   function ensureSheet(name, headers) {
     var sh = ss.getSheetByName(name);
-    if (!sh) sh = ss.insertSheet(name);
-    if (sh.getLastRow() === 0) sh.appendRow(headers);
+    if (!sh) { sh = ss.insertSheet(name); }
+    if (sh.getLastRow() === 0) {
+      sh.appendRow(headers);
+    } else {
+      /* Add any missing columns to existing sheets */
+      var lastCol = sh.getLastColumn();
+      var existing = lastCol > 0 ? sh.getRange(1, 1, 1, lastCol).getValues()[0] : [];
+      headers.forEach(function(h) {
+        if (existing.indexOf(h) === -1) {
+          sh.getRange(1, sh.getLastColumn() + 1).setValue(h);
+        }
+      });
+    }
     return sh;
   }
 
   ensureSheet(SHEET.USERS,    USER_HEADERS);
   ensureSheet(SHEET.SESSIONS, SESSION_HEADERS);
-  Logger.log('Setup complete.');
+  Logger.log('Setup complete. Run this after any USER_HEADERS change.');
 }
 
 /* ── Entry Points ────────────────────────────────────────── */
@@ -62,6 +73,7 @@ function handle(p) {
       case 'login':              return respond(doLogin(p));
       case 'forgotPassword':     return respond(doForgotPassword(p));
       case 'changePassword':     return respond(doChangePassword(p));
+      case 'getMe':              return respond(doGetMe(p));
       case 'submitSession':      return respond(doSubmitSession(p));
       case 'getQuestions':
       case 'getMultiSelect':
@@ -81,6 +93,67 @@ function respond(data) {
   return ContentService
     .createTextOutput(JSON.stringify(data))
     .setMimeType(ContentService.MimeType.JSON);
+}
+
+/* ── VIP Helpers (server-side, mirrors frontend VipUtils) ── */
+function _isVipActive(user) {
+  var plan = user.vip_plan;
+  if (!plan || String(plan).trim() === '' || String(plan).trim() === '0') return false;
+  var exp = user.vip_expires;
+  if (!exp || String(exp).trim() === '') return false;
+  var t = new Date(exp).getTime();
+  if (isNaN(t)) return false;
+  return Date.now() <= t;
+}
+
+function _getVipStatus(user) {
+  var plan = user.vip_plan;
+  if (!plan || String(plan).trim() === '' || String(plan).trim() === '0') return 'free';
+  var exp = user.vip_expires;
+  if (!exp || String(exp).trim() === '') return 'free';
+  var t = new Date(exp).getTime();
+  if (isNaN(t)) return 'free';
+  var now = Date.now();
+  if (now > t) return 'expired';
+  if (Math.ceil((t - now) / 86400000) <= 7) return 'expiring';
+  return 'active';
+}
+
+function _getVipDaysLeft(user) {
+  if (!user.vip_expires) return null;
+  var t = new Date(user.vip_expires).getTime();
+  if (isNaN(t)) return null;
+  var diff = t - Date.now();
+  return diff < 0 ? 0 : Math.ceil(diff / 86400000);
+}
+
+function _getVipReminderStage(user) {
+  if (!user.vip_expires) return null;
+  var t = new Date(user.vip_expires).getTime();
+  if (isNaN(t)) return null;
+  var d = Math.ceil((t - Date.now()) / 86400000);
+  if (d < 0)  return 'expired';
+  if (d <= 1) return '1day';
+  if (d <= 3) return '3days';
+  if (d <= 7) return '7days';
+  return null;
+}
+
+/* Builds the standard user response object */
+function _buildUserResponse(user) {
+  var vipActive = _isVipActive(user);
+  var vipStatus = _getVipStatus(user);
+  return {
+    email:             user.email,
+    name:              user.name,
+    role:              user.role,
+    vip_plan:          user.vip_plan    || '',
+    vip_expires:       user.vip_expires || '',
+    isVipActive:       vipActive,
+    vipStatus:         vipStatus,
+    vipDaysLeft:       _getVipDaysLeft(user),
+    vipReminderStage:  _getVipReminderStage(user)
+  };
 }
 
 /* ── Spreadsheet Helpers ─────────────────────────────────── */
@@ -139,7 +212,8 @@ function doRegister(p) {
     new Date().toISOString(), '', ''
   ]);
 
-  return { ok: true, token: token, user: { email: email, name: name, role: 'free', vip_plan: '', vip_expires: '' } };
+  var newUser = { email: email, name: name, role: 'free', vip_plan: '', vip_expires: '' };
+  return { ok: true, token: token, user: _buildUserResponse(newUser) };
 }
 
 /* ── Login ───────────────────────────────────────────────── */
@@ -157,22 +231,16 @@ function doLogin(p) {
     return { ok: false, message: '帳號或密碼錯誤' };
   }
 
-  /* 自動檢查 VIP 是否過期 */
-  var role = user.role;
-  if (role === 'vip' && user.vip_expires) {
-    var expires = new Date(user.vip_expires);
-    if (!isNaN(expires) && expires < new Date()) {
-      role = 'free';
-      user.role = 'free';
-      setRowByIndex(sheet, user._row, user, USER_HEADERS);
-    }
+  /* 自動檢查 VIP 是否過期（以 vip_expires 為準，不只看 role） */
+  if (!_isVipActive(user) && user.role === 'vip') {
+    user.role = 'free';
+    setRowByIndex(sheet, user._row, user, USER_HEADERS);
   }
 
   return {
-    ok: true,
+    ok:    true,
     token: user.token,
-    user: { email: user.email, name: user.name, role: role,
-            vip_plan: user.vip_plan || '', vip_expires: user.vip_expires || '' }
+    user:  _buildUserResponse(user)
   };
 }
 
@@ -280,6 +348,25 @@ function doSubmitSession(p) {
   return { ok: true };
 }
 
+/* ── Get Me（用 token 刷新目前使用者資料）────────────────── */
+function doGetMe(p) {
+  var token = (p.token || '').trim();
+  if (!token) return { ok: false, message: '未登入' };
+
+  var sheet = getSheet(SHEET.USERS);
+  var users = sheetToObjects(sheet);
+  var user  = users.find(function(u){ return u.token === token; });
+  if (!user) return { ok: false, message: '登入已過期，請重新登入' };
+
+  /* Auto-expire check on getMe too */
+  if (!_isVipActive(user) && user.role === 'vip') {
+    user.role = 'free';
+    setRowByIndex(sheet, user._row, user, USER_HEADERS);
+  }
+
+  return { ok: true, user: _buildUserResponse(user) };
+}
+
 /* ── Admin: Upgrade VIP（手動在 GAS 執行，不暴露為 API）── */
 function adminUpgradeVip(email, plan, months) {
   /* plan: 'monthly' | 'quarterly'
@@ -300,4 +387,68 @@ function adminUpgradeVip(email, plan, months) {
   setRowByIndex(sheet, user._row, user, USER_HEADERS);
 
   Logger.log('VIP upgraded: ' + email + ' → ' + plan + ' until ' + expires.toISOString());
+}
+
+/* ── Daily VIP Reminder（定時觸發，每天 09:00 執行）────── */
+function sendVipReminders() {
+  var sheet = getSheet(SHEET.USERS);
+  var users = sheetToObjects(sheet);
+  var now   = new Date();
+
+  var SUBJECTS = {
+    '7days': '【就服乙級 AI 教練】VIP 將於 7 天內到期',
+    '3days': '【就服乙級 AI 教練】VIP 將於 3 天內到期',
+    '1day':  '【就服乙級 AI 教練】VIP 將於 1 天內到期',
+    'expired':'【就服乙級 AI 教練】VIP 會員已到期'
+  };
+  var BODIES = {
+    '7days':  '提醒您，VIP 會員資格將於 7 天內到期，為避免學習中斷，建議提前完成續費。\n\n續費網址：https://ccazhu-coder.github.io/simple-game/pricing.html',
+    '3days':  '提醒您，VIP 會員資格即將到期，若需繼續使用完整題庫、模擬考與分析功能，請儘早續費。\n\n續費網址：https://ccazhu-coder.github.io/simple-game/pricing.html',
+    '1day':   '您的 VIP 會員資格將於 1 天內到期，為避免功能中斷，請立即續費。\n\n續費網址：https://ccazhu-coder.github.io/simple-game/pricing.html',
+    'expired':'您的 VIP 會員資格已到期，目前已恢復為免費會員。若需繼續使用 VIP 功能，請重新開通。\n\n開通網址：https://ccazhu-coder.github.io/simple-game/pricing.html'
+  };
+
+  users.forEach(function(user) {
+    if (!user.email || !user.vip_plan) return;
+
+    var stage = _getVipReminderStage(user);
+    if (!stage) return;
+
+    /* Skip if already sent the same stage today */
+    if (user.last_vip_reminder_stage === stage) return;
+
+    /* Auto-expire: downgrade role if needed */
+    if (stage === 'expired' && user.role === 'vip') {
+      user.role = 'free';
+    }
+
+    try {
+      MailApp.sendEmail({
+        to: user.email,
+        subject: SUBJECTS[stage],
+        body: BODIES[stage] + '\n\n— 就服乙級 AI 教練 系統通知'
+      });
+      user.last_vip_reminder_stage = stage;
+      user.last_vip_reminder_at    = now.toISOString();
+      setRowByIndex(sheet, user._row, user, USER_HEADERS);
+      Logger.log('VIP reminder sent: ' + user.email + ' stage=' + stage);
+    } catch(e) {
+      Logger.log('Failed to send reminder to ' + user.email + ': ' + e.message);
+    }
+  });
+}
+
+/* ── Create / recreate daily trigger at 09:00 ───────────── */
+function createDailyTrigger() {
+  ScriptApp.getProjectTriggers().forEach(function(t) {
+    if (t.getHandlerFunction() === 'sendVipReminders') {
+      ScriptApp.deleteTrigger(t);
+    }
+  });
+  ScriptApp.newTrigger('sendVipReminders')
+    .timeBased()
+    .everyDays(1)
+    .atHour(9)
+    .create();
+  Logger.log('Daily VIP reminder trigger created (09:00 every day).');
 }

@@ -7,16 +7,20 @@ document.addEventListener('DOMContentLoaded', function() {
   if (!user) { Store.set('_after_login', location.href); location.href = 'login.html'; return; }
 
   /* ── Profile header ─────────────────────────────────────── */
-  var initial = (user.name || user.email || '?')[0].toUpperCase();
-  var _vp = String(user.vip_plan || '').trim();
-  var isVip = user.role === 'vip' || (_vp !== '' && _vp !== '0');
+  var initial  = (user.name || user.email || '?')[0].toUpperCase();
+  var vipSt    = VipUtils.getStatus(user);
+  var isVip    = (vipSt === 'active' || vipSt === 'expiring');
+  var badgeCls = isVip ? 'badge-vip' : (vipSt === 'expired' ? 'badge-red' : 'badge-gray');
+  var badgeTxt = isVip
+    ? ('⭐ VIP 會員' + (vipSt === 'expiring' ? '（即將到期）' : ''))
+    : (vipSt === 'expired' ? '🔴 VIP 已到期' : '免費會員');
   var el = document.getElementById('mc-profile');
   if (el) {
     el.innerHTML =
       '<div class="member-avatar">' + initial + '</div>' +
       '<h2 style="color:#fff;margin-bottom:6px">' + (user.name || user.email) + '</h2>' +
       '<div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">' +
-        '<span class="badge ' + (isVip?'badge-vip':'badge-gray') + '">' + (isVip?'⭐ VIP 會員':'免費會員') + '</span>' +
+        '<span class="badge ' + badgeCls + '">' + badgeTxt + '</span>' +
         '<span style="color:#94A3B8;font-size:13px">' + (user.email||'') + '</span>' +
       '</div>';
   }
@@ -68,28 +72,46 @@ document.addEventListener('DOMContentLoaded', function() {
   /* ── VIP info ─────────────────────────────────────────────── */
   var elVip = document.getElementById('mc-vip');
   if (elVip) {
-    if (isVip) {
-      var planNames = { monthly:'月費方案', quarterly:'季費方案', yearly:'年費方案' };
-      var planLabel = planNames[user.vip_plan] || (user.vip_plan ? 'VIP 方案（' + user.vip_plan + '）' : 'VIP 方案');
-      var expiresStr = '';
-      if (user.vip_expires) {
-        var expDate = new Date(user.vip_expires);
-        if (!isNaN(expDate)) {
-          expiresStr = '（有效期限至 ' + expDate.getFullYear() + '/' +
-            String(expDate.getMonth()+1).padStart(2,'0') + '/' +
-            String(expDate.getDate()).padStart(2,'0') + '）';
-        }
-      }
+    var planNames   = { monthly:'月費方案', quarterly:'季費方案', yearly:'年費方案' };
+    var planLabel   = planNames[user.vip_plan] || (user.vip_plan ? 'VIP 方案（' + user.vip_plan + '）' : 'VIP 方案');
+    var expiry      = VipUtils.formatExpiry(user);
+    var daysLeft    = VipUtils.getDaysLeft(user);
+    var reminder    = VipUtils.getReminderText(user);
+    var reminderStage = VipUtils.getReminderStage(user);
+
+    if (vipSt === 'expired') {
       elVip.innerHTML =
-        '<div class="notice-box success">' +
-          '⭐ 您已是 VIP 會員【' + planLabel + '】' + expiresStr + '，享有完整功能：題庫全開、複選強化、模擬考、完整錯題本與學習分析。' +
+        '<div class="notice-box danger mb-16">⚠️ ' + reminder + '</div>' +
+        '<div style="background:var(--bg-2);border-radius:12px;padding:16px 20px;margin-bottom:16px">' +
+          '<div style="font-size:12px;color:var(--muted);margin-bottom:4px">上次 VIP 方案</div>' +
+          '<div style="font-weight:700;margin-bottom:4px">' + planLabel + '</div>' +
+          '<div style="font-size:13px;color:var(--danger-dark)">到期日：' + expiry + '</div>' +
         '</div>' +
-        '<div class="flex gap-12 flex-wrap mt-16">' +
+        '<a href="pricing.html" class="btn btn-vip btn-block">重新開通 VIP</a>';
+
+    } else if (isVip) {
+      var reminderBox = reminder
+        ? '<div class="notice-box ' + (reminderStage === '1day' ? 'danger' : 'warning') + ' mb-16">⚠️ ' + reminder + '</div>'
+        : '';
+      var daysColor = (daysLeft !== null && daysLeft <= 7) ? 'var(--danger-dark)' : 'var(--success-dark)';
+      elVip.innerHTML =
+        reminderBox +
+        '<div class="notice-box success mb-16">' +
+          '⭐ 您已是 VIP 會員，享有完整功能：題庫全開、複選強化、模擬考、完整錯題本與學習分析。' +
+        '</div>' +
+        '<div class="grid-3 gap-12 mb-16" style="font-size:13px">' +
+          _infoBox('方案', planLabel) +
+          _infoBox('到期日', expiry) +
+          _infoBox('剩餘天數', (daysLeft !== null ? daysLeft + ' 天' : '—'), daysColor) +
+        '</div>' +
+        '<div class="flex gap-12 flex-wrap">' +
           '<a href="quiz.html"            class="btn btn-primary">開始練習</a>' +
           '<a href="multi-select.html"    class="btn btn-secondary">複選強化</a>' +
           '<a href="mock-exam.html"       class="btn btn-secondary">模擬考</a>' +
           '<a href="wrong-questions.html" class="btn btn-secondary">錯題本</a>' +
+          '<a href="pricing.html"         class="btn btn-vip">我要續費</a>' +
         '</div>';
+
     } else {
       elVip.innerHTML =
         '<div class="vip-banner">' +
@@ -191,6 +213,13 @@ function _statBox(icon, value, label) {
     '<div style="font-size:24px;margin-bottom:6px">' + icon + '</div>' +
     '<div style="font-size:26px;font-weight:900;letter-spacing:-.02em">' + value + '</div>' +
     '<div style="font-size:12px;color:var(--muted);font-weight:700;margin-top:3px">' + label + '</div>' +
+    '</div>';
+}
+
+function _infoBox(label, value, valColor) {
+  return '<div style="background:var(--bg-2);border-radius:8px;padding:12px;text-align:center">' +
+    '<div style="color:var(--muted);font-size:12px;margin-bottom:4px">' + label + '</div>' +
+    '<div style="font-weight:700' + (valColor ? ';color:' + valColor : '') + '">' + value + '</div>' +
     '</div>';
 }
 
