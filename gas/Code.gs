@@ -61,6 +61,7 @@ function handle(p) {
       case 'register':           return respond(doRegister(p));
       case 'login':              return respond(doLogin(p));
       case 'forgotPassword':     return respond(doForgotPassword(p));
+      case 'changePassword':     return respond(doChangePassword(p));
       case 'submitSession':      return respond(doSubmitSession(p));
       case 'getQuestions':
       case 'getMultiSelect':
@@ -215,6 +216,38 @@ function doForgotPassword(p) {
 
   /* 無論帳號存不存在都回相同訊息，避免 email 列舉攻擊 */
   return { ok: true, message: '若此 Email 已註冊，重設信已寄出，請檢查信箱（含垃圾信件匣）。' };
+}
+
+/* ── Change Password ─────────────────────────────────────── */
+function doChangePassword(p) {
+  var token     = (p.token     || '').trim();
+  var currentPw = (p.currentPassword || '');
+  var newPw     = (p.newPassword     || '');
+
+  if (!token)
+    return { ok: false, message: '請先登入後再操作' };
+  if (!newPw || newPw.length < 6)
+    return { ok: false, message: '新密碼至少需 6 碼' };
+
+  var sheet = getSheet(SHEET.USERS);
+  var users = sheetToObjects(sheet);
+  var user  = users.find(function(u){ return u.token === token; });
+
+  if (!user)
+    return { ok: false, message: '登入已過期，請重新登入' };
+
+  if (user.password !== hashPw(currentPw))
+    return { ok: false, message: '目前密碼錯誤' };
+
+  if (hashPw(newPw) === user.password)
+    return { ok: false, message: '新密碼不可與目前密碼相同' };
+
+  /* Update password and invalidate old token */
+  user.password = hashPw(newPw);
+  user.token    = genToken();
+  setRowByIndex(sheet, user._row, user, USER_HEADERS);
+
+  return { ok: true, message: '密碼修改成功' };
 }
 
 /* ── Submit Session ──────────────────────────────────────── */

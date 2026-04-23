@@ -117,6 +117,73 @@ document.addEventListener('DOMContentLoaded', function() {
       if (content) content.classList.add('active');
     }
   };
+
+  /* ── Password change ─────────────────────────────────────── */
+  window.MCPw = {
+    submit: function() {
+      var user  = Store.get(APP_CONFIG.KEYS.USER);
+      var errEl = document.getElementById('pw-error');
+      var sucEl = document.getElementById('pw-success');
+      var btn   = document.getElementById('pw-submit-btn');
+
+      function showErr(msg) {
+        errEl.textContent   = msg;
+        errEl.style.display = 'block';
+        sucEl.style.display = 'none';
+      }
+      errEl.style.display = 'none';
+      sucEl.style.display = 'none';
+
+      if (!user || !user.token) { showErr('請先登入後再操作'); return; }
+
+      var cur = document.getElementById('pw-current').value;
+      var nw  = document.getElementById('pw-new').value;
+      var cnf = document.getElementById('pw-confirm').value;
+
+      if (!cur.trim())   { showErr('請輸入目前密碼'); return; }
+      if (!nw.trim())    { showErr('請輸入新密碼'); return; }
+      if (nw.length < 6) { showErr('新密碼至少需 6 碼'); return; }
+      if (nw === cur)    { showErr('新密碼不可與目前密碼相同'); return; }
+      if (!cnf.trim())   { showErr('請輸入確認新密碼'); return; }
+      if (nw !== cnf)    { showErr('兩次輸入的新密碼不一致'); return; }
+
+      btn.disabled    = true;
+      btn.textContent = '修改中…';
+
+      Api.get('changePassword', {
+        token:           user.token,
+        currentPassword: cur,
+        newPassword:     nw
+      }).then(function(r) {
+        if (r.ok) {
+          sucEl.textContent   = '密碼修改成功！即將登出，請以新密碼重新登入…';
+          sucEl.style.display = 'block';
+          document.getElementById('pw-current').value = '';
+          document.getElementById('pw-new').value     = '';
+          document.getElementById('pw-confirm').value = '';
+          btn.textContent = '修改成功';
+          Auth.clearUserData();
+          setTimeout(function() { location.href = 'login.html'; }, 2200);
+        } else {
+          showErr(r.message || '修改失敗，請稍後再試');
+          btn.disabled    = false;
+          btn.textContent = '確認修改密碼';
+        }
+      }).catch(function() {
+        showErr('網路錯誤，請檢查連線後重試');
+        btn.disabled    = false;
+        btn.textContent = '確認修改密碼';
+      });
+    },
+
+    reset: function() {
+      document.getElementById('pw-current').value = '';
+      document.getElementById('pw-new').value     = '';
+      document.getElementById('pw-confirm').value = '';
+      document.getElementById('pw-error').style.display   = 'none';
+      document.getElementById('pw-success').style.display = 'none';
+    }
+  };
 });
 
 function _statBox(icon, value, label) {

@@ -26,6 +26,7 @@
         <div class="member-tab active" data-tab="overview" onclick="MCTab.show('overview')">總覽</div>
         <div class="member-tab" data-tab="history"  onclick="MCTab.show('history')">練習紀錄</div>
         <div class="member-tab" data-tab="vip"      onclick="MCTab.show('vip')">方案狀態</div>
+        <div class="member-tab" data-tab="security" onclick="MCTab.show('security')">帳號安全</div>
       </div>
 
       <!-- Tab: Overview -->
@@ -91,6 +92,37 @@
           <div style="text-align:center;padding:48px 0;color:var(--muted)">
             <div class="spinner" style="margin:0 auto 12px"></div>載入中…
           </div>
+        </div>
+      </div>
+
+      <!-- Tab: Security -->
+      <div class="member-tab-content" id="mc-tab-security">
+        <h3 class="mb-16">修改密碼</h3>
+        <div class="card" style="max-width:480px">
+          <div id="pw-error"   class="notice-box danger  mb-16" style="display:none"></div>
+          <div id="pw-success" class="notice-box success mb-16" style="display:none"></div>
+          <div class="form-group">
+            <label class="form-label">目前密碼 <span class="req">*</span></label>
+            <input type="password" id="pw-current" class="form-control"
+                   placeholder="請輸入目前密碼" autocomplete="current-password">
+          </div>
+          <div class="form-group">
+            <label class="form-label">新密碼 <span class="req">*</span></label>
+            <input type="password" id="pw-new" class="form-control"
+                   placeholder="至少 6 碼" autocomplete="new-password">
+          </div>
+          <div class="form-group">
+            <label class="form-label">確認新密碼 <span class="req">*</span></label>
+            <input type="password" id="pw-confirm" class="form-control"
+                   placeholder="再輸入一次新密碼" autocomplete="new-password">
+          </div>
+          <div class="flex gap-12" style="margin-top:8px">
+            <button class="btn btn-primary"   id="pw-submit-btn" onclick="MCPw.submit()">確認修改密碼</button>
+            <button class="btn btn-secondary" id="pw-reset-btn"  onclick="MCPw.reset()">清空</button>
+          </div>
+        </div>
+        <div class="notice-box info mt-16" style="max-width:480px;font-size:13px">
+          💡 修改密碼後將自動登出，請以新密碼重新登入。
         </div>
       </div>
 
