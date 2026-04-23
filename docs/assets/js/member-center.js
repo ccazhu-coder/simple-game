@@ -8,7 +8,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
   /* ── Profile header ─────────────────────────────────────── */
   var initial = (user.name || user.email || '?')[0].toUpperCase();
-  var isVip   = user.role === 'vip';
+  var _vp = String(user.vip_plan || '').trim();
+  var isVip = user.role === 'vip' || (_vp !== '' && _vp !== '0');
   var el = document.getElementById('mc-profile');
   if (el) {
     el.innerHTML =
@@ -68,9 +69,20 @@ document.addEventListener('DOMContentLoaded', function() {
   var elVip = document.getElementById('mc-vip');
   if (elVip) {
     if (isVip) {
+      var planNames = { monthly:'月費方案', quarterly:'季費方案', yearly:'年費方案' };
+      var planLabel = planNames[user.vip_plan] || (user.vip_plan ? 'VIP 方案（' + user.vip_plan + '）' : 'VIP 方案');
+      var expiresStr = '';
+      if (user.vip_expires) {
+        var expDate = new Date(user.vip_expires);
+        if (!isNaN(expDate)) {
+          expiresStr = '（有效期限至 ' + expDate.getFullYear() + '/' +
+            String(expDate.getMonth()+1).padStart(2,'0') + '/' +
+            String(expDate.getDate()).padStart(2,'0') + '）';
+        }
+      }
       elVip.innerHTML =
         '<div class="notice-box success">' +
-          '⭐ 您已是 VIP 會員，享有完整功能：題庫全開、複選強化、模擬考、完整錯題本與學習分析。' +
+          '⭐ 您已是 VIP 會員【' + planLabel + '】' + expiresStr + '，享有完整功能：題庫全開、複選強化、模擬考、完整錯題本與學習分析。' +
         '</div>' +
         '<div class="flex gap-12 flex-wrap mt-16">' +
           '<a href="quiz.html"            class="btn btn-primary">開始練習</a>' +

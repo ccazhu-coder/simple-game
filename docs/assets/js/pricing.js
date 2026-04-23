@@ -4,7 +4,12 @@
 document.addEventListener('DOMContentLoaded', function() {
 
   var user  = Store.get(APP_CONFIG.KEYS.USER);
-  var isVip = user && user.role === 'vip';
+  var isVip = (function(u) {
+    if (!u) return false;
+    if (u.role === 'vip') return true;
+    var p = String(u.vip_plan || '').trim();
+    return p !== '' && p !== '0';
+  })(user);
 
   /* ── Dynamic CTA based on auth state ─────────────────────── */
   var el = document.getElementById('pricing-cta-primary');

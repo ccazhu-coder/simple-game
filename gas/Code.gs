@@ -138,7 +138,7 @@ function doRegister(p) {
     new Date().toISOString(), '', ''
   ]);
 
-  return { ok: true, token: token, user: { email: email, name: name, role: 'free' } };
+  return { ok: true, token: token, user: { email: email, name: name, role: 'free', vip_plan: '', vip_expires: '' } };
 }
 
 /* ── Login ───────────────────────────────────────────────── */

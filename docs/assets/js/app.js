@@ -132,6 +132,14 @@ window.Loading = {
   hide: function() { this._ensure(); this._el.classList.remove('active'); }
 };
 
+/* ── VIP helper (canonical check used by all nav/guard logic) */
+function _isVipUser(u) {
+  if (!u) return false;
+  if (u.role === 'vip') return true;
+  var p = String(u.vip_plan || '').trim();
+  return p !== '' && p !== '0';
+}
+
 /* ── Nav / Footer builders ───────────────────────────────────*/
 var _NAV = [
   { href:'index.html',           label:'首頁' },
@@ -152,7 +160,7 @@ function _navHTML(user) {
   }).join('');
   var ad, am;
   if (user) {
-    var vip = user.role === 'vip';
+    var vip = _isVipUser(user);
     ad = '<span class="badge '+(vip?'badge-vip':'badge-gray')+'">'+(vip?'⭐ VIP':'免費版')+'</span>' +
       '<a href="member-center.html" class="btn btn-secondary btn-sm">會員中心</a>' +
       '<button class="btn btn-sm" style="color:var(--muted)" onclick="Auth.logout()">登出</button>';
@@ -241,7 +249,7 @@ window.App = {
       if (redirectBack) Store.set('_after_login', location.href);
       location.href = 'login.html'; return false;
     }
-    if (user.role !== 'vip') {
+    if (!_isVipUser(user)) {
       Modal.confirm({
         title:'⭐ 此功能需要 VIP 會員',
         body:'升級 VIP 即可解鎖複選題強化、模擬考、完整錯題本與學習分析。',
