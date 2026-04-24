@@ -122,26 +122,36 @@ window.QuizEngine = (function() {
       var user      = Store.get(APP_CONFIG.KEYS.USER);
       var params    = user ? { token: user.token || '' } : {};
 
-      /* ① cache 存在 → 立刻使用（不檢查 TTL），逾期才背景刷新 */
+      /* ① quick/multi：永遠從本地題庫重新隨機抽題，確保每次題目不同 */
+      if (state.mode === 'quick' || state.mode === 'multi') {
+        var freshLocal = _localQuestions(state.mode);
+        if (freshLocal.length > 0) {
+          state.questions = freshLocal;
+          _bgRefresh(apiAction, params, cacheKey);
+          return Promise.resolve(true);
+        }
+      }
+
+      /* ② wrong/其他：cache 存在 → 重新 shuffle 確保順序不同 */
       var cached = Store.get(cacheKey);
       if (cached && Array.isArray(cached.questions) && cached.questions.length > 0) {
-        state.questions = cached.questions;
+        state.questions = _shuffle(cached.questions);
         if (!cached.timestamp || cached.timestamp < Date.now() - 3600000) {
           _bgRefresh(apiAction, params, cacheKey);
         }
         return Promise.resolve(true);
       }
 
-      /* ② 無 cache → 立刻用本地題庫，背景更新 cache 供下次使用 */
+      /* ③ 無 cache → 本地題庫 fallback，背景更新 cache 供下次使用 */
       var localQs = _localQuestions(state.mode);
       if (localQs.length > 0) {
         state.questions = localQs;
-        Store.set(cacheKey, { questions: localQs, timestamp: 0 }); // timestamp=0 觸發下次背景刷新
+        Store.set(cacheKey, { questions: localQs, timestamp: 0 });
         _bgRefresh(apiAction, params, cacheKey);
         return Promise.resolve(true);
       }
 
-      /* ③ 極端 fallback（QUESTIONS_DB 未載入）：才等 API */
+      /* ④ 極端 fallback（QUESTIONS_DB 未載入）：才等 API */
       return Api.get(apiAction, params)
         .then(function(r) {
           var list = r.questions || r.data || [];
