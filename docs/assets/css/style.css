@@ -769,6 +769,10 @@ p{color:var(--muted);font-weight:600}
 .pay-badge{display:inline-flex;align-items:center;padding:4px 10px;border-radius:6px;font-size:12px;font-weight:700;letter-spacing:.02em}
 .pay-linepay{background:#00C300;color:#fff}
 .pay-transfer{background:#E2E8F0;color:#475569}
+.linepay-qr-box{margin-top:24px;padding:20px;background:#F0FFF0;border:2px solid #00C300;border-radius:16px;text-align:center;max-width:220px}
+.linepay-qr-label{margin-bottom:12px}
+.linepay-qr-img{width:180px;height:180px;object-fit:contain;border-radius:8px;display:block;margin:0 auto}
+.linepay-qr-hint{margin-top:10px;font-size:12px;color:#166534;font-weight:600;line-height:1.5}
 .footer-brand-name{font-size:18px;font-weight:900;margin-bottom:10px}
 .footer-brand-desc{font-size:13px;color:#94A3B8;line-height:1.75;font-weight:600}
 .footer-heading{font-size:11px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;color:#64748B;margin-bottom:14px}
