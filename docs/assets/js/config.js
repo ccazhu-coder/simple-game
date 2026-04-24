@@ -4,7 +4,7 @@
 window.APP_CONFIG = {
 
   // ── API ───────────────────────────────────────────────────
-  API_URL: 'https://script.google.com/macros/s/AKfycbyUYn3E3FaCkoS81foQlnLgExJQ8YP00rd6ZXp9eY66u90ZtIT9_j4oKLMduwHDZRLc/exec',
+  API_URL: 'https://script.google.com/macros/s/AKfycbwNDPLzxpOPIZyO864iYZ1u61C1hV07GvqgUIBbjeWXbluMbOASJcnrnrN6sG_LmIH7/exec',
 
   // ── Contact ───────────────────────────────────────────────
   VIP_LINE_URL:   'https://lin.ee/qZt97JY',
