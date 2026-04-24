@@ -83,7 +83,7 @@ window.QuizEngine = (function() {
     if (!db || db.length === 0) return [];
 
     var user = Store.get(APP_CONFIG.KEYS.USER);
-    var isVip = user && user.role === 'vip';
+    var isVip = VipUtils.isVipActive(user);
 
     if (mode === 'multi') {
       var multiPool = db.filter(function(q){ return q.type === '複選'; });

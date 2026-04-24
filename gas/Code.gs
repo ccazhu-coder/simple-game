@@ -261,7 +261,7 @@ function doForgotPassword(p) {
     try {
       MailApp.sendEmail({
         to: email,
-        subject: '【就服乙級 AI 教練】密碼重設通知',
+        subject: '【就服乙級學科 AI 教練】密碼重設通知',
         body: [
           '您好，',
           '',
@@ -274,7 +274,7 @@ function doForgotPassword(p) {
           '',
           '如非您本人操作，請忽略此信，您的帳號仍然安全。',
           '',
-          '— 就服乙級 AI 教練 系統通知'
+          '— 就服乙級學科 AI 教練 系統通知'
         ].join('\n')
       });
     } catch(mailErr) {
@@ -396,10 +396,10 @@ function sendVipReminders() {
   var now   = new Date();
 
   var SUBJECTS = {
-    '7days': '【就服乙級 AI 教練】VIP 將於 7 天內到期',
-    '3days': '【就服乙級 AI 教練】VIP 將於 3 天內到期',
-    '1day':  '【就服乙級 AI 教練】VIP 將於 1 天內到期',
-    'expired':'【就服乙級 AI 教練】VIP 會員已到期'
+    '7days': '【就服乙級學科 AI 教練】VIP 將於 7 天內到期',
+    '3days': '【就服乙級學科 AI 教練】VIP 將於 3 天內到期',
+    '1day':  '【就服乙級學科 AI 教練】VIP 將於 1 天內到期',
+    'expired':'【就服乙級學科 AI 教練】VIP 會員已到期'
   };
   var BODIES = {
     '7days':  '提醒您，VIP 會員資格將於 7 天內到期，為避免學習中斷，建議提前完成續費。\n\n續費網址：https://ccazhu-coder.github.io/simple-game/pricing.html',
@@ -426,7 +426,7 @@ function sendVipReminders() {
       MailApp.sendEmail({
         to: user.email,
         subject: SUBJECTS[stage],
-        body: BODIES[stage] + '\n\n— 就服乙級 AI 教練 系統通知'
+        body: BODIES[stage] + '\n\n— 就服乙級學科 AI 教練 系統通知'
       });
       user.last_vip_reminder_stage = stage;
       user.last_vip_reminder_at    = now.toISOString();
