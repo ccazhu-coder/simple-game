@@ -236,7 +236,7 @@ function _navHTML(user) {
   }
   return '<nav class="nav" id="main-nav"><div class="container nav-inner">' +
     '<a href="index.html" class="nav-brand"><div class="nav-brand-badge">就</div>' +
-    '<span>就服乙級 <span style="color:var(--primary)">AI 教練</span></span></a>' +
+    '<span>就服乙級學科 <span style="color:var(--primary)">AI 教練</span></span></a>' +
     '<div class="nav-links">'+links+'</div>' +
     '<div class="nav-actions">'+ad+'</div>' +
     '<div class="nav-hamburger" id="nav-hamburger" onclick="App.toggleDrawer()">' +
@@ -251,7 +251,7 @@ function _footerHTML() {
     '<div class="footer-grid">' +
       '<div>' +
         '<div class="footer-brand-logo"><img src="assets/img/logo-zhiji-zhitu.jpg" alt="知己知途" class="footer-logo-img"></div>' +
-        '<div class="footer-brand-name">就服乙級 AI 教練</div>' +
+        '<div class="footer-brand-name">就服乙級學科 AI 教練</div>' +
         '<div class="footer-brand-desc">不只是刷題網站，而是一套可練習、可解析、可追蹤、可升級的就業服務乙級 AI 備考系統。幫助你從刷題進化成真正會解題。</div></div>' +
       '<div><div class="footer-heading">功能</div>' +
         '<a href="quiz.html" class="footer-link">快速練習</a>' +
