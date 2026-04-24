@@ -763,6 +763,12 @@ p{color:var(--muted);font-weight:600}
 /* ── Footer ────────────────────────────────────────────────── */
 .footer{background:var(--dark);color:#fff;padding:56px 0 28px;margin-top:auto}
 .footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:44px;margin-bottom:44px}
+.footer-brand-logo{margin-bottom:12px}
+.footer-logo-img{width:64px;height:64px;border-radius:50%;object-fit:cover}
+.pay-methods{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:10px}
+.pay-badge{display:inline-flex;align-items:center;padding:4px 10px;border-radius:6px;font-size:12px;font-weight:700;letter-spacing:.02em}
+.pay-linepay{background:#00C300;color:#fff}
+.pay-transfer{background:#E2E8F0;color:#475569}
 .footer-brand-name{font-size:18px;font-weight:900;margin-bottom:10px}
 .footer-brand-desc{font-size:13px;color:#94A3B8;line-height:1.75;font-weight:600}
 .footer-heading{font-size:11px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;color:#64748B;margin-bottom:14px}

@@ -249,8 +249,10 @@ function _navHTML(user) {
 function _footerHTML() {
   return '<footer class="footer"><div class="container">' +
     '<div class="footer-grid">' +
-      '<div><div class="footer-brand-name">就服乙級 AI 教練</div>' +
-      '<div class="footer-brand-desc">不只是刷題網站，而是一套可練習、可解析、可追蹤、可升級的就業服務乙級 AI 備考系統。幫助你從刷題進化成真正會解題。</div></div>' +
+      '<div>' +
+        '<div class="footer-brand-logo"><img src="assets/img/logo-zhiji-zhitu.jpg" alt="知己知途" class="footer-logo-img"></div>' +
+        '<div class="footer-brand-name">就服乙級 AI 教練</div>' +
+        '<div class="footer-brand-desc">不只是刷題網站，而是一套可練習、可解析、可追蹤、可升級的就業服務乙級 AI 備考系統。幫助你從刷題進化成真正會解題。</div></div>' +
       '<div><div class="footer-heading">功能</div>' +
         '<a href="quiz.html" class="footer-link">快速練習</a>' +
         '<a href="multi-select.html" class="footer-link">複選題強化</a>' +
@@ -269,7 +271,7 @@ function _footerHTML() {
     '</div>' +
     '<div class="footer-divider"></div>' +
     '<div class="footer-bottom">' +
-      '<div class="footer-copy">© 2024 就業服務乙級 AI 闖關學習系統。All rights reserved.</div>' +
+      '<div class="footer-copy">© 2026 就業服務乙級 AI 闖關學習系統。All rights reserved.</div>' +
       '<div class="footer-copy">以 AI 教練模式幫助更有效率地備考</div>' +
     '</div></div></footer>';
 }
